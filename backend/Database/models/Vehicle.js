@@ -1,32 +1,22 @@
-const mongoose = require("mongoose");
+/**
+ * Example JSON response (Vehicle)
+ * {
+ *   "_id": "6744c2f4e13b2a9f3c5d6001",
+ *   "plateNumber": "ABC-1234",
+ *   "type": "sedan",
+ *   "assignedTrainerId": "6744c2f4e13b2a9f3c5d5001", // Trainer ObjectId
+ *   "isAvailable": true,
+ *   "__v": 0
+ * }
+ */
+const mongoose = require("../connection");
 const { Schema } = mongoose;
 
-const vehicleSchema = new Schema({
-	name: { type: String, required: true },
-	registrationNumber: { type: String, required: true, unique: true },
-	licenseType: {
-		type: Schema.Types.ObjectId,
-		ref: "License",
-		required: true,
-	},
-	status: {
-		type: String,
-		enum: ["active", "maintenance"],
-		default: "active",
-	},
-	trainers: [{ type: Schema.Types.ObjectId, ref: "User" }], // trainers who can drive
-	availability: [
-		{
-			date: { type: Date, required: true },
-			timeSlots: [
-				{
-					startTime: { type: String, required: true },
-					endTime: { type: String, required: true },
-					isBooked: { type: Boolean, default: false },
-				},
-			],
-		},
-	],
+const VehicleSchema = new Schema({
+	plateNumber: { type: String, required: true },
+	type: { type: String },
+	assignedTrainerId: { type: Schema.Types.ObjectId, ref: "Trainer" },
+	isAvailable: { type: Boolean, default: true },
 });
 
-module.exports = mongoose.model("Vehicle", vehicleSchema);
+module.exports = mongoose.model("Vehicle", VehicleSchema);

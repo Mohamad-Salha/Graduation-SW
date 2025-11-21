@@ -1,31 +1,30 @@
-const mongoose = require('mongoose');
+/**
+ * Example JSON response (User)
+ * {
+ *   "_id": "6744c2f4e13b2a9f3c5d4001",
+ *   "name": "Jane Doe",
+ *   "email": "jane.doe@example.com",
+ *   "password": "$2b$10$hashedexample...", // hashed value
+ *   "phone": "+1-555-123-4567",
+ *   "role": "student",
+ *   "createdAt": "2025-11-20T12:00:00.000Z",
+ *   "__v": 0
+ * }
+ */
+const mongoose = require("../connection");
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  phone: String,
-  role: { type: String, enum: ['student', 'instructor', 'trainer', 'admin'], required: true },
-  
-  // Role-specific subdocuments
-  studentDetails: {
-    license: { type: Schema.Types.ObjectId, ref: 'License' },
-    enrollments: [{ type: Schema.Types.ObjectId, ref: 'Enrollment' }],
-    progress: [{ type: Schema.Types.ObjectId, ref: 'Progress' }],
-    ratingsGiven: [{ type: Schema.Types.ObjectId, ref: 'Rating' }],
-    notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
-    payments: [{ type: Schema.Types.ObjectId, ref: 'Payment' }]
-  },
-  trainerDetails: {
-    sessions: [{ type: Schema.Types.ObjectId, ref: 'Session' }],
-    vehicles: [{ type: Schema.Types.ObjectId, ref: 'Vehicle' }],
-    ratingsReceived: [{ type: Schema.Types.ObjectId, ref: 'Rating' }]
-  },
-  instructorDetails: {
-    courses: [{ type: Schema.Types.ObjectId, ref: 'Course' }],
-    lessons: [{ type: Schema.Types.ObjectId, ref: 'Lesson' }]
-  }
+const UserSchema = new Schema({
+	name: { type: String, required: true },
+	email: { type: String, required: true, unique: true },
+	password: { type: String, required: true }, // hashed
+	phone: { type: String },
+	role: {
+		type: String,
+		enum: ["student", "teacher", "trainer", "admin"],
+		required: true,
+	},
+	createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", UserSchema);

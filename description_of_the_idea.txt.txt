@@ -1,0 +1,159 @@
+1. Overview
+
+This system manages a driving school, including students, teachers, trainers, and administrators. It supports course enrollment, theoretical and practical training, scheduling, payments, exam management, and notifications.
+
+The system is designed to be scalable, maintainable, and user-friendly, with clear roles and responsibilities.
+
+2. Users and Roles
+2.1 Student
+
+Sign Up / Sign In
+
+Students can sign up by filling in required information.
+
+A request is sent to the admin for approval.
+
+After approval, the student can sign in.
+
+Course Enrollment
+
+Upon first login, a list of available courses (licenses) appears.
+
+Students choose a course before proceeding.
+
+Only one active course per student is allowed at a time.
+
+Teacher Assignment
+
+Students choose a theoretical teacher for traffic signs, engine info, and road knowledge.
+
+Schedule Management
+
+Theoretical Schedule: Includes lecture times, teacher, date, location, and other details.
+
+Practical Schedule: Becomes available after passing the theoretical exam.
+
+Students can book practical sessions based on trainer availability.
+
+Session limits are enforced to ensure fairness.
+
+Exams
+
+After completing the minimum number of practical sessions and paying all dues, a trainer can mark the student ready for the practical test.
+
+Admin schedules the test (date, time, location) and notifies the student.
+
+Students who fail can request a retest.
+
+2.2 Teacher
+
+Sign In Only
+
+Teachers are added by the admin.
+
+Responsibilities
+
+View assigned students and their lecture progress.
+
+Manage theoretical lecture schedules (static for now).
+
+Mark students as ready for theoretical exams.
+
+Optional quizzes for knowledge confirmation.
+
+Notify admin when students are ready for theoretical exams.
+
+2.3 Trainer
+
+Sign In
+
+Trainers are added by the admin.
+
+Responsibilities
+
+Edit their weekly schedule (availability).
+
+Students book practical sessions based on trainer availability.
+
+Record student attendance and payments for each session.
+
+Track student progress (progress bar / readiness for practical test).
+
+Once conditions are met (minimum sessions + full payment), mark students ready for practical tests.
+
+Admin schedules the practical exam and notifies students.
+
+Filter students by session date for easy payment entry.
+
+2.4 Admin
+
+Dashboard
+
+Full visibility and management of the system: students, teachers, trainers, vehicles, exams, and payments.
+
+Responsibilities
+
+Approve student sign-ups.
+
+Add/list teachers and trainers, view schedules.
+
+Add/list vehicles and assign them to trainers.
+
+Schedule exams (theoretical and practical) and notify students.
+
+Track student exam history and results.
+
+3. Key Features
+
+Role-Based Access: Students, teachers, trainers, and admin have specific dashboards and privileges.
+
+Courses/Licenses: Students choose from available licenses; each license has a minimum number of practical sessions and a price.
+
+Scheduling: Theoretical and practical schedules are managed, with practical sessions linked to trainer availability.
+
+Progress Tracking: Trainers track student progress for practical readiness.
+
+Payments: Trainers record payments for practical sessions.
+
+Exams and Exam Attempts: Each exam attempt is tracked separately to allow multiple retests.
+
+Notifications: System notifies students about exam results, schedules, and retests.
+
+Single Active Course Rule: Students cannot take a new course while an existing course is active.
+
+4. Database Collections (for clarity)
+Collection	Purpose
+users	Stores admin, teachers, trainers, and students (role-based). Passwords hashed.
+licenses	Courses/licenses available for students.
+vehicles	Vehicles assigned to trainers.
+theoSchedules	Theoretical lecture schedules (teacher, date, location).
+practicalSchedules	Practical session schedules (trainer, student, vehicle, date).
+studentSessions	Tracks individual practical sessions, payments, and progress.
+exams	Scheduled exams (type, date, location, students).
+examAttempts	Tracks each attempt per student per exam (allows multiple attempts).
+notifications	Stores messages sent to students, trainers, teachers, or admin.
+5. Security and Authentication
+
+Password Hashing: All passwords are stored securely using hashing (bcrypt).
+
+Tokens / Sessions: JWT or similar tokens can be used for authentication.
+
+Admin Seed: The first admin is created via a seeding script with a hashed password.
+
+6. Workflow Summary
+
+Student signs up → waits for admin approval.
+
+Student selects a course → chooses a theoretical teacher.
+
+Student attends lectures → optionally takes quizzes → marked ready for theoretical exam.
+
+Student passes theoretical exam → can book practical sessions.
+
+Trainer manages practical sessions, attendance, payments, and progress.
+
+Trainer marks student ready for practical exam → admin schedules exam.
+
+Student passes → receives license → may choose another course.
+
+Failed exams → student requests retest → process repeats.
