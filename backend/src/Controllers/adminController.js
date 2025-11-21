@@ -42,6 +42,111 @@ class AdminController {
 			return res.status(400).json({ error: error.message });
 		}
 	}
+
+	// === License Management ===
+
+	// POST /api/admin/licenses
+	async createLicense(req, res) {
+		try {
+			const { name, description, minPracticalSessions, price } = req.body;
+
+			if (!name || !price) {
+				return res
+					.status(400)
+					.json({ error: "Name and price are required" });
+			}
+
+			const result = await adminService.createLicense(
+				name,
+				description,
+				minPracticalSessions,
+				price
+			);
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/licenses
+	async getAllLicenses(req, res) {
+		try {
+			const result = await adminService.getAllLicenses();
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// === Teacher Management ===
+
+	// POST /api/admin/teachers
+	async createTeacher(req, res) {
+		try {
+			const { name, email, password, phone } = req.body;
+
+			if (!name || !email || !password) {
+				return res
+					.status(400)
+					.json({ error: "Name, email, and password are required" });
+			}
+
+			const result = await adminService.createTeacher(
+				name,
+				email,
+				password,
+				phone
+			);
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/teachers
+	async getAllTeachers(req, res) {
+		try {
+			const result = await adminService.getAllTeachers();
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// === Trainer Management ===
+
+	// POST /api/admin/trainers
+	async createTrainer(req, res) {
+		try {
+			const { name, email, password, phone } = req.body;
+
+			if (!name || !email || !password) {
+				return res
+					.status(400)
+					.json({ error: "Name, email, and password are required" });
+			}
+
+			const result = await adminService.createTrainer(
+				name,
+				email,
+				password,
+				phone
+			);
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/trainers
+	async getAllTrainers(req, res) {
+		try {
+			const result = await adminService.getAllTrainers();
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
 }
 
 module.exports = new AdminController();

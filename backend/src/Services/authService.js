@@ -1,5 +1,10 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const authRepo = require("../Repositories/authRepos");
+
+// Secret key for JWT (in production, use environment variable)
+const JWT_SECRET =
+	process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
 class AuthService {
 	// Student signup
@@ -55,8 +60,20 @@ class AuthService {
 			}
 		}
 
+		// Generate JWT token
+		const token = jwt.sign(
+			{
+				id: user._id,
+				email: user.email,
+				role: user.role,
+			},
+			JWT_SECRET,
+			{ expiresIn: "24h" }
+		);
+
 		return {
 			message: "Login successful",
+			token,
 			user: {
 				id: user._id,
 				name: user.name,
