@@ -1,12 +1,15 @@
-const express = require('express');
-require('./Database/connection.js');
+const express = require("express");
+const initRoutes = require("./src/initRoutes");
 const app = express();
-const port = 3000;	
+const port = 3000;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Initialize all routes
+initRoutes(app);
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+	console.log(`Server is running at http://localhost:${port}`);
 });
