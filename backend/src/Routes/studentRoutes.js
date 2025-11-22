@@ -31,4 +31,14 @@ router.post("/choose-teacher", (req, res) =>
 	studentController.chooseTeacher(req, res)
 );
 
+// === Exam Routes ===
+
+// GET /api/student/my-exams - Get student's exams and attempts
+router.get("/my-exams", (req, res) => studentController.getMyExams(req, res));
+
+// POST /api/student/request-retest - Register for exam (including retests)
+router.post("/request-retest", (req, res) =>
+	studentController.requestRetest(req, res)
+);
+
 module.exports = router;

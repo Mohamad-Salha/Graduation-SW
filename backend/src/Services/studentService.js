@@ -32,20 +32,48 @@ class StudentService {
 
 		const user = await authRepo.findUserById(userId);
 
-		return {
+		// Build clean response
+		const profile = {
 			studentId: student._id,
 			name: user.name,
 			email: user.email,
 			phone: user.phone,
 			status: student.status,
-			chosenLicense: student.chosenLicense,
-			theoTeacher: student.theoTeacherId,
-			trainer: student.trainerId,
 			theoPassed: student.theoPassed,
 			practicalProgress: student.practicalProgress,
 			practicalSessionsCompleted: student.practicalSessionsCompleted,
-			courses: student.courses,
 		};
+
+		// Add license info if enrolled
+		if (student.chosenLicense) {
+			profile.license = {
+				name: student.chosenLicense.name,
+				description: student.chosenLicense.description,
+				price: student.chosenLicense.price,
+				minPracticalSessions:
+					student.chosenLicense.minPracticalSessions,
+			};
+		}
+
+		// Add teacher info if assigned
+		if (student.theoTeacherId && student.theoTeacherId.userId) {
+			profile.teacher = {
+				name: student.theoTeacherId.userId.name,
+				email: student.theoTeacherId.userId.email,
+				phone: student.theoTeacherId.userId.phone,
+			};
+		}
+
+		// Add trainer info if assigned
+		if (student.trainerId && student.trainerId.userId) {
+			profile.trainer = {
+				name: student.trainerId.userId.name,
+				email: student.trainerId.userId.email,
+				phone: student.trainerId.userId.phone,
+			};
+		}
+
+		return profile;
 	}
 
 	// Enroll in a course (license)
@@ -140,6 +168,79 @@ class StudentService {
 				name: teacher.userId.name,
 				email: teacher.userId.email,
 			},
+		};
+	}
+
+	// === Exam Management ===
+
+	// Get student's exams and attempts
+	async getMyExams(userId) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		if (!student.chosenLicense) {
+			throw new Error("Please enroll in a course first");
+		}
+
+		// Get student's attempts
+		const attempts = await studentRepo.getMyExamAttempts(student._id);
+
+		// Get upcoming exams for student's course
+		const upcomingExams = await studentRepo.getUpcomingExamsForCourse(
+			student.chosenLicense._id
+		);
+
+		return {
+			attempts: attempts.map((a) => ({
+				attemptId: a._id,
+				examType: a.examId.type,
+				courseName: a.examId.courseId.name,
+				examDate: a.examId.date,
+				location: a.examId.location,
+				attemptNumber: a.attemptNumber,
+				status: a.status,
+			})),
+			upcomingExams: upcomingExams.map((e) => ({
+				examId: e._id,
+				type: e.type,
+				courseName: e.courseId.name,
+				date: e.date,
+				location: e.location,
+			})),
+		};
+	}
+
+	// Request retest (register for exam)
+	async requestRetest(userId, examId) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		if (!student.chosenLicense) {
+			throw new Error("Please enroll in a course first");
+		}
+
+		// Get next attempt number
+		const attemptNumber = await studentRepo.getNextAttemptNumber(
+			student._id,
+			examId
+		);
+
+		// Create attempt
+		const attempt = await studentRepo.createExamAttempt(
+			examId,
+			student._id,
+			attemptNumber
+		);
+
+		return {
+			message: "Successfully registered for exam",
+			attemptId: attempt._id,
+			attemptNumber: attempt.attemptNumber,
+			status: attempt.status,
 		};
 	}
 }

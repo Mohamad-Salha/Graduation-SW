@@ -50,4 +50,39 @@ router.post("/trainers", (req, res) => adminController.createTrainer(req, res));
 // GET /api/admin/trainers - Get all trainers
 router.get("/trainers", (req, res) => adminController.getAllTrainers(req, res));
 
+// === Exam Routes ===
+
+// POST /api/admin/exams/theoretical - Schedule theoretical exam
+router.post("/exams/theoretical", (req, res) =>
+	adminController.scheduleTheoricalExam(req, res)
+);
+
+// POST /api/admin/exams/practical - Schedule practical exam
+router.post("/exams/practical", (req, res) =>
+	adminController.schedulePracticalExam(req, res)
+);
+
+// GET /api/admin/exams - Get all exams
+router.get("/exams", (req, res) => adminController.getAllExams(req, res));
+
+// GET /api/admin/students/ready-theo - Get students ready for theoretical exam
+router.get("/students/ready-theo", (req, res) =>
+	adminController.getStudentsReadyForTheoExam(req, res)
+);
+
+// GET /api/admin/students/ready-practical - Get students ready for practical exam
+router.get("/students/ready-practical", (req, res) =>
+	adminController.getStudentsReadyForPracticalExam(req, res)
+);
+
+// PUT /api/admin/exam-attempts/:attemptId/result - Record exam result
+router.put("/exam-attempts/:attemptId/result", (req, res) =>
+	adminController.recordExamResult(req, res)
+);
+
+// GET /api/admin/exams/:examId/attempts - Get all attempts for an exam
+router.get("/exams/:examId/attempts", (req, res) =>
+	adminController.getExamAttempts(req, res)
+);
+
 module.exports = router;

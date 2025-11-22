@@ -174,6 +174,149 @@ class AdminService {
 			})),
 		};
 	}
+
+	// === Exam Management ===
+
+	// Schedule theoretical exam
+	async scheduleTheoricalExam({ courseId, date, location }) {
+		const exam = await adminRepo.createExam({
+			type: "theoretical",
+			courseId,
+			date,
+			location,
+		});
+
+		return {
+			message: "Theoretical exam scheduled successfully",
+			exam: {
+				examId: exam._id,
+				type: exam.type,
+				courseId: exam.courseId,
+				date: exam.date,
+				location: exam.location,
+			},
+		};
+	}
+
+	// Schedule practical exam
+	async schedulePracticalExam({ courseId, date, location }) {
+		const exam = await adminRepo.createExam({
+			type: "practical",
+			courseId,
+			date,
+			location,
+		});
+
+		return {
+			message: "Practical exam scheduled successfully",
+			exam: {
+				examId: exam._id,
+				type: exam.type,
+				courseId: exam.courseId,
+				date: exam.date,
+				location: exam.location,
+			},
+		};
+	}
+
+	// Get all exams
+	async getAllExams() {
+		const exams = await adminRepo.getAllExams();
+		return {
+			count: exams.length,
+			exams: exams.map((e) => ({
+				examId: e._id,
+				type: e.type,
+				courseName: e.courseId.name,
+				courseId: e.courseId._id,
+				date: e.date,
+				location: e.location,
+			})),
+		};
+	}
+
+	// Get students ready for theoretical exam
+	async getStudentsReadyForTheoExam() {
+		const students = await adminRepo.getStudentsReadyForTheoExam();
+		return {
+			count: students.length,
+			students: students.map((s) => ({
+				studentId: s._id,
+				name: s.userId.name,
+				email: s.userId.email,
+				phone: s.userId.phone,
+				license: s.chosenLicense.name,
+				teacher: s.theoTeacherId?.userId?.name || "N/A",
+			})),
+		};
+	}
+
+	// Get students ready for practical exam
+	async getStudentsReadyForPracticalExam() {
+		const students = await adminRepo.getStudentsReadyForPracticalExam();
+		return {
+			count: students.length,
+			students: students.map((s) => ({
+				studentId: s._id,
+				name: s.userId.name,
+				email: s.userId.email,
+				phone: s.userId.phone,
+				license: s.chosenLicense.name,
+				trainer: s.trainerId?.userId?.name || "N/A",
+			})),
+		};
+	}
+
+	// Record exam result
+	async recordExamResult(attemptId, status) {
+		const attempt = await adminRepo.getExamAttemptById(attemptId);
+		if (!attempt) {
+			throw new Error("Exam attempt not found");
+		}
+
+		if (attempt.status !== "pending") {
+			throw new Error("Exam attempt already has a result");
+		}
+
+		// Update attempt status
+		const updatedAttempt = await adminRepo.updateExamAttemptResult(
+			attemptId,
+			status
+		);
+
+		// If theoretical exam passed, update student
+		if (status === "passed") {
+			const exam = await adminRepo.getExamById(attempt.examId._id);
+			if (exam.type === "theoretical") {
+				await adminRepo.markStudentTheoPassed(attempt.studentId._id);
+			}
+		}
+
+		return {
+			message: "Exam result recorded successfully",
+			attempt: {
+				attemptId: updatedAttempt._id,
+				studentId: updatedAttempt.studentId,
+				status: updatedAttempt.status,
+			},
+		};
+	}
+
+	// Get exam attempts for specific exam
+	async getExamAttempts(examId) {
+		const attempts = await adminRepo.getExamAttempts(examId);
+		return {
+			count: attempts.length,
+			attempts: attempts.map((a) => ({
+				attemptId: a._id,
+				studentName: a.studentId?.userId?.name || "Unknown",
+				studentEmail: a.studentId?.userId?.email || "N/A",
+				attemptNumber: a.attemptNumber,
+				status: a.status,
+				date: a.date,
+			})),
+		};
+	}
 }
 
 module.exports = new AdminService();

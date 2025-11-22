@@ -49,41 +49,45 @@ class TeacherService {
 		};
 	}
 
-	// Create theoretical schedule
-	async createSchedule(
-		userId,
-		lectureTitle,
-		date,
-		startTime,
-		endTime,
-		location,
-		description
-	) {
+	// Create theoretical schedule (weekly recurring)
+	async createSchedule(userId, courseId, weeklySlots, location) {
 		const teacher = await teacherRepo.getTeacherByUserId(userId);
 		if (!teacher) {
 			throw new Error("Teacher profile not found");
 		}
 
+		// Validate weeklySlots
+		if (!weeklySlots || weeklySlots.length !== 3) {
+			throw new Error("You must provide exactly 3 weekly time slots");
+		}
+
+		// Check if teacher already has a schedule for this course
+		const existingSchedule = await teacherRepo.getScheduleByCourse(
+			teacher._id,
+			courseId
+		);
+		if (existingSchedule) {
+			throw new Error(
+				"You already have a schedule for this course. Update or delete it first."
+			);
+		}
+
 		const schedule = await teacherRepo.createTheoSchedule({
 			teacherId: teacher._id,
-			lectureTitle,
-			date,
-			startTime,
-			endTime,
+			courseId,
+			weeklySlots,
 			location,
-			description,
+			isActive: true,
 		});
 
 		return {
-			message: "Schedule created successfully",
+			message: "Weekly schedule created successfully",
 			schedule: {
 				scheduleId: schedule._id,
-				lectureTitle: schedule.lectureTitle,
-				date: schedule.date,
-				startTime: schedule.startTime,
-				endTime: schedule.endTime,
+				courseId: schedule.courseId,
+				weeklySlots: schedule.weeklySlots,
 				location: schedule.location,
-				description: schedule.description,
+				isActive: schedule.isActive,
 			},
 		};
 	}
@@ -101,12 +105,13 @@ class TeacherService {
 			count: schedules.length,
 			schedules: schedules.map((s) => ({
 				scheduleId: s._id,
-				lectureTitle: s.lectureTitle,
-				date: s.date,
-				startTime: s.startTime,
-				endTime: s.endTime,
+				courseId: s.courseId,
+				weeklySlots: s.weeklySlots,
 				location: s.location,
-				description: s.description,
+				isActive: s.isActive,
+				assignedStudentsCount: s.assignedStudents
+					? s.assignedStudents.length
+					: 0,
 			})),
 		};
 	}

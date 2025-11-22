@@ -29,6 +29,8 @@ const StudentSchema = new Schema({
 	theoTeacherId: { type: Schema.Types.ObjectId, ref: "Teacher" },
 	trainerId: { type: Schema.Types.ObjectId, ref: "Trainer" },
 	theoPassed: { type: Boolean, default: false },
+	readyForTheoExam: { type: Boolean, default: false },
+	readyForPracticalExam: { type: Boolean, default: false },
 	practicalProgress: { type: Number, default: 0 },
 	practicalSessionsCompleted: { type: Number, default: 0 },
 	status: {

@@ -2,7 +2,7 @@ const authRoutes = require("./Routes/authRoutes");
 const adminRoutes = require("./Routes/adminRoutes");
 const studentRoutes = require("./Routes/studentRoutes");
 const teacherRoutes = require("./Routes/teacherRoutes");
-// const trainerRoutes = require("./Routes/trainerRoutes");
+const trainerRoutes = require("./Routes/trainerRoutes");
 
 function initRoutes(app) {
 	// Authentication routes
@@ -18,7 +18,7 @@ function initRoutes(app) {
 	app.use("/api/teacher", teacherRoutes);
 
 	// Trainer routes
-	// app.use("/api/trainer", trainerRoutes);
+	app.use("/api/trainer", trainerRoutes);
 
 	// Health check
 	app.get("/", (req, res) => {

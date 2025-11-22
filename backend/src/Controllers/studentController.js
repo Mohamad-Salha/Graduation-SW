@@ -76,6 +76,36 @@ class StudentController {
 			return res.status(400).json({ error: error.message });
 		}
 	}
+
+	// === Exam Management ===
+
+	// GET /api/student/my-exams - Get student's exams and attempts
+	async getMyExams(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const result = await studentService.getMyExams(userId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// POST /api/student/request-retest - Register for exam (including retests)
+	async requestRetest(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const { examId } = req.body;
+
+			if (!examId) {
+				return res.status(400).json({ error: "Exam ID is required" });
+			}
+
+			const result = await studentService.requestRetest(userId, examId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
 }
 
 module.exports = new StudentController();

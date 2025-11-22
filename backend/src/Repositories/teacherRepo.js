@@ -49,9 +49,21 @@ class TeacherRepository {
 		return await schedule.save();
 	}
 
+	// Get schedule by course (to prevent duplicates)
+	async getScheduleByCourse(teacherId, courseId) {
+		return await TheoSchedule.findOne({
+			teacherId,
+			courseId,
+			isActive: true,
+		});
+	}
+
 	// Get all theoretical schedules for a teacher
 	async getTeacherSchedules(teacherId) {
-		return await TheoSchedule.find({ teacherId }).sort({ date: 1 });
+		return await TheoSchedule.find({ teacherId, isActive: true }).populate(
+			"courseId",
+			"name description"
+		);
 	}
 
 	// Update student - mark as ready for theoretical exam

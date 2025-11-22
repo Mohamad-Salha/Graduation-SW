@@ -2,6 +2,8 @@ const Student = require("../../Database/models/Student");
 const License = require("../../Database/models/License");
 const Teacher = require("../../Database/models/Teacher");
 const User = require("../../Database/models/User");
+const ExamAttempt = require("../../Database/models/ExamAttempt");
+const Exam = require("../../Database/models/Exam");
 
 class StudentRepository {
 	// Get all available licenses
@@ -21,8 +23,14 @@ class StudentRepository {
 				"chosenLicense",
 				"name description price minPracticalSessions"
 			)
-			.populate("theoTeacherId")
-			.populate("trainerId");
+			.populate({
+				path: "theoTeacherId",
+				populate: { path: "userId", select: "name email phone" },
+			})
+			.populate({
+				path: "trainerId",
+				populate: { path: "userId", select: "name email phone" },
+			});
 	}
 
 	// Get student by ID
@@ -86,6 +94,46 @@ class StudentRepository {
 			{ $addToSet: { assignedStudents: studentId } },
 			{ new: true }
 		);
+	}
+
+	// === Exam Management ===
+
+	// Get student's exam attempts with exam details
+	async getMyExamAttempts(studentId) {
+		return await ExamAttempt.find({ studentId })
+			.populate({
+				path: "examId",
+				populate: { path: "courseId", select: "name" },
+			})
+			.sort({ date: -1 });
+	}
+
+	// Get upcoming exams for student's course
+	async getUpcomingExamsForCourse(courseId) {
+		const now = new Date();
+		return await Exam.find({
+			courseId,
+			date: { $gte: now },
+		})
+			.populate("courseId", "name")
+			.sort({ date: 1 });
+	}
+
+	// Create exam attempt (student registers for exam)
+	async createExamAttempt(examId, studentId, attemptNumber) {
+		const attempt = new ExamAttempt({
+			examId,
+			studentId,
+			attemptNumber,
+			status: "pending",
+		});
+		return await attempt.save();
+	}
+
+	// Get next attempt number for student
+	async getNextAttemptNumber(studentId, examId) {
+		const attempts = await ExamAttempt.find({ studentId, examId });
+		return attempts.length + 1;
 	}
 }
 

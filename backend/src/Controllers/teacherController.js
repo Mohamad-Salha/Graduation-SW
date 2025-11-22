@@ -23,33 +23,38 @@ class TeacherController {
 		}
 	}
 
-	// POST /api/teacher/schedules - Create theoretical schedule
+	// POST /api/teacher/schedules - Create weekly theoretical schedule
 	async createSchedule(req, res) {
 		try {
 			const userId = req.user.id; // From JWT token
-			const {
-				lectureTitle,
-				date,
-				startTime,
-				endTime,
-				location,
-				description,
-			} = req.body;
+			const { courseId, weeklySlots, location } = req.body;
 
-			if (!lectureTitle || !date || !startTime || !endTime || !location) {
+			if (!courseId || !weeklySlots || !location) {
 				return res.status(400).json({
-					error: "Lecture title, date, start time, end time, and location are required",
+					error: "Course ID, weekly slots, and location are required",
 				});
+			}
+
+			if (!Array.isArray(weeklySlots) || weeklySlots.length !== 3) {
+				return res.status(400).json({
+					error: "Weekly slots must be an array of exactly 3 time slots",
+				});
+			}
+
+			// Validate each slot has required fields
+			for (const slot of weeklySlots) {
+				if (!slot.day || !slot.startTime || !slot.endTime) {
+					return res.status(400).json({
+						error: "Each slot must have day, startTime, and endTime",
+					});
+				}
 			}
 
 			const result = await teacherService.createSchedule(
 				userId,
-				lectureTitle,
-				date,
-				startTime,
-				endTime,
-				location,
-				description
+				courseId,
+				weeklySlots,
+				location
 			);
 			return res.status(201).json(result);
 		} catch (error) {

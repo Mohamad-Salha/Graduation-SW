@@ -147,6 +147,95 @@ class AdminController {
 			return res.status(400).json({ error: error.message });
 		}
 	}
+
+	// === Exam Management ===
+
+	// POST /api/admin/exams/theoretical
+	async scheduleTheoricalExam(req, res) {
+		try {
+			const { courseId, date, location } = req.body;
+			const result = await adminService.scheduleTheoricalExam({
+				courseId,
+				date,
+				location,
+			});
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// POST /api/admin/exams/practical
+	async schedulePracticalExam(req, res) {
+		try {
+			const { courseId, date, location } = req.body;
+			const result = await adminService.schedulePracticalExam({
+				courseId,
+				date,
+				location,
+			});
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/exams
+	async getAllExams(req, res) {
+		try {
+			const result = await adminService.getAllExams();
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/students/ready-theo
+	async getStudentsReadyForTheoExam(req, res) {
+		try {
+			const result = await adminService.getStudentsReadyForTheoExam();
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/students/ready-practical
+	async getStudentsReadyForPracticalExam(req, res) {
+		try {
+			const result =
+				await adminService.getStudentsReadyForPracticalExam();
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// PUT /api/admin/exam-attempts/:attemptId/result
+	async recordExamResult(req, res) {
+		try {
+			const { attemptId } = req.params;
+			const { status } = req.body;
+			const result = await adminService.recordExamResult(
+				attemptId,
+				status
+			);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/exams/:examId/attempts
+	async getExamAttempts(req, res) {
+		try {
+			const { examId } = req.params;
+			const result = await adminService.getExamAttempts(examId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
 }
 
 module.exports = new AdminController();
