@@ -45,7 +45,157 @@ class TrainerService {
 		};
 	}
 
-	// Schedule practical session
+	// === New Practical Schedule System ===
+
+	// Create weekly availability schedule
+	async createPracticalSchedule(
+		userId,
+		{ weeklySlots, repeatForWeeks, vehicleId }
+	) {
+		const trainer = await trainerRepo.getTrainerByUserId(userId);
+		if (!trainer) {
+			throw new Error("Trainer profile not found");
+		}
+
+		// Add vehicleId to each slot if provided
+		const slotsWithVehicle = weeklySlots.map((slot) => ({
+			...slot,
+			vehicleId: vehicleId || slot.vehicleId,
+		}));
+
+		const schedule = await trainerRepo.createPracticalSchedule({
+			trainerId: trainer._id,
+			weeklySlots: slotsWithVehicle,
+			repeatForWeeks: repeatForWeeks || 1,
+			isActive: true,
+		});
+
+		return {
+			message: "Weekly schedule created successfully",
+			scheduleId: schedule._id,
+			repeatForWeeks: schedule.repeatForWeeks,
+			slotsCount: schedule.weeklySlots.length,
+		};
+	}
+
+	// Get trainer's schedules
+	async getSchedules(userId) {
+		const trainer = await trainerRepo.getTrainerByUserId(userId);
+		if (!trainer) {
+			throw new Error("Trainer profile not found");
+		}
+
+		const schedules = await trainerRepo.getTrainerSchedules(trainer._id);
+
+		return {
+			count: schedules.length,
+			schedules: schedules.map((s) => ({
+				scheduleId: s._id,
+				repeatForWeeks: s.repeatForWeeks,
+				isActive: s.isActive,
+				createdAt: s.createdAt,
+				slots: s.weeklySlots.map((slot) => ({
+					slotId: slot._id,
+					day: slot.day,
+					startTime: slot.startTime,
+					endTime: slot.endTime,
+					isBooked: slot.isBooked,
+					bookedBy: slot.bookedBy || null,
+					sessionDate: slot.sessionDate || null,
+					attended: slot.attended,
+					paymentAmount: slot.paymentAmount,
+					vehicle: slot.vehicleId
+						? `${slot.vehicleId.model} (${slot.vehicleId.licensePlate})`
+						: "N/A",
+				})),
+			})),
+		};
+	}
+
+	// Mark slot attendance
+	async markSlotAttendance(
+		userId,
+		scheduleId,
+		slotId,
+		attended,
+		paymentAmount
+	) {
+		const trainer = await trainerRepo.getTrainerByUserId(userId);
+		if (!trainer) {
+			throw new Error("Trainer profile not found");
+		}
+
+		const schedule = await trainerRepo.getScheduleById(scheduleId);
+		if (!schedule) {
+			throw new Error("Schedule not found");
+		}
+
+		if (schedule.trainerId.toString() !== trainer._id.toString()) {
+			throw new Error("This schedule does not belong to you");
+		}
+
+		const slot = schedule.weeklySlots.id(slotId);
+		if (!slot) {
+			throw new Error("Slot not found");
+		}
+
+		if (!slot.isBooked) {
+			throw new Error("This slot is not booked");
+		}
+
+		await trainerRepo.markSlotAttendance(
+			scheduleId,
+			slotId,
+			attended,
+			paymentAmount
+		);
+
+		// Update student progress if attended
+		if (attended && slot.bookedBy) {
+			const attendedCount = await this.countStudentAttendedSlots(
+				slot.bookedBy
+			);
+			const student = await trainerRepo.getStudentById(slot.bookedBy);
+			const minSessions = student.chosenLicense.minPracticalSessions;
+			const progress = Math.min(
+				100,
+				Math.round((attendedCount / minSessions) * 100)
+			);
+
+			await trainerRepo.updateStudentProgress(
+				slot.bookedBy,
+				attendedCount,
+				progress
+			);
+		}
+
+		return {
+			message: "Attendance marked successfully",
+			scheduleId,
+			slotId,
+			attended,
+		};
+	}
+
+	// Helper: Count attended slots for student
+	async countStudentAttendedSlots(studentId) {
+		const schedules = await trainerRepo.getStudentBookedSlots(studentId);
+		let count = 0;
+		schedules.forEach((schedule) => {
+			schedule.weeklySlots.forEach((slot) => {
+				if (
+					slot.bookedBy &&
+					slot.bookedBy.toString() === studentId.toString() &&
+					slot.attended
+				) {
+					count++;
+				}
+			});
+		});
+		return count;
+	}
+
+	// Old methods kept for backward compatibility
 	async schedulePracticalSession(
 		userId,
 		{ studentId, date, time, vehicleId, paymentAmount }

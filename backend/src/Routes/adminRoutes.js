@@ -85,4 +85,17 @@ router.get("/exams/:examId/attempts", (req, res) =>
 	adminController.getExamAttempts(req, res)
 );
 
+// === Vehicle Routes ===
+
+// POST /api/admin/vehicles - Create a new vehicle
+router.post("/vehicles", (req, res) => adminController.createVehicle(req, res));
+
+// GET /api/admin/vehicles - Get all vehicles
+router.get("/vehicles", (req, res) => adminController.getAllVehicles(req, res));
+
+// PUT /api/admin/vehicles/:vehicleId/assign - Assign vehicle to trainer
+router.put("/vehicles/:vehicleId/assign", (req, res) =>
+	adminController.assignVehicleToTrainer(req, res)
+);
+
 module.exports = router;

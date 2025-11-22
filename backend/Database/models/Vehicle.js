@@ -13,8 +13,9 @@ const mongoose = require("../connection");
 const { Schema } = mongoose;
 
 const VehicleSchema = new Schema({
-	plateNumber: { type: String, required: true },
-	type: { type: String },
+	model: { type: String, required: true },
+	licensePlate: { type: String, required: true, unique: true },
+	type: { type: String, enum: ["sedan", "suv", "truck"], default: "sedan" },
 	assignedTrainerId: { type: Schema.Types.ObjectId, ref: "Trainer" },
 	isAvailable: { type: Boolean, default: true },
 });

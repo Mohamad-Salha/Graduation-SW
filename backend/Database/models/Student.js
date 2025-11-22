@@ -33,6 +33,7 @@ const StudentSchema = new Schema({
 	readyForPracticalExam: { type: Boolean, default: false },
 	practicalProgress: { type: Number, default: 0 },
 	practicalSessionsCompleted: { type: Number, default: 0 },
+	maxSessionsPerWeek: { type: Number, default: 3 }, // Fairness limit
 	status: {
 		type: String,
 		enum: ["pending", "approved", "active", "inactive"],

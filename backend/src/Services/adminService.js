@@ -317,6 +317,66 @@ class AdminService {
 			})),
 		};
 	}
+
+	// === Vehicle Management ===
+
+	// Create vehicle
+	async createVehicle({ model, licensePlate, type }) {
+		const vehicle = await adminRepo.createVehicle({
+			model,
+			licensePlate,
+			type: type || "sedan",
+			isAvailable: true,
+		});
+
+		return {
+			message: "Vehicle created successfully",
+			vehicle: {
+				vehicleId: vehicle._id,
+				model: vehicle.model,
+				licensePlate: vehicle.licensePlate,
+				type: vehicle.type,
+			},
+		};
+	}
+
+	// Get all vehicles
+	async getAllVehicles() {
+		const vehicles = await adminRepo.getAllVehicles();
+		return {
+			count: vehicles.length,
+			vehicles: vehicles.map((v) => ({
+				vehicleId: v._id,
+				model: v.model,
+				licensePlate: v.licensePlate,
+				type: v.type,
+				isAvailable: v.isAvailable,
+				assignedTrainer:
+					v.assignedTrainerId?.userId?.name || "Unassigned",
+			})),
+		};
+	}
+
+	// Assign vehicle to trainer
+	async assignVehicleToTrainer(vehicleId, trainerId) {
+		const vehicle = await adminRepo.getVehicleById(vehicleId);
+		if (!vehicle) {
+			throw new Error("Vehicle not found");
+		}
+
+		const trainer = await adminRepo.getTrainerById(trainerId);
+		if (!trainer) {
+			throw new Error("Trainer not found");
+		}
+
+		await adminRepo.assignVehicleToTrainer(vehicleId, trainerId);
+
+		return {
+			message: "Vehicle assigned to trainer successfully",
+			vehicleId,
+			trainerId,
+		};
+	}
 }
 
 module.exports = new AdminService();

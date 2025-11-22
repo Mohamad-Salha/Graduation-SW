@@ -34,4 +34,21 @@ router.put("/students/:studentId/ready", (req, res) =>
 	trainerController.markStudentReadyForPractical(req, res)
 );
 
+// === New Scheduling System ===
+
+// POST /api/trainer/schedules - Create weekly availability schedule
+router.post("/schedules", (req, res) =>
+	trainerController.createSchedule(req, res)
+);
+
+// GET /api/trainer/schedules - Get trainer's schedules
+router.get("/schedules", (req, res) =>
+	trainerController.getSchedules(req, res)
+);
+
+// PUT /api/trainer/schedules/:scheduleId/slots/:slotId/attendance - Mark slot attendance
+router.put("/schedules/:scheduleId/slots/:slotId/attendance", (req, res) =>
+	trainerController.markSlotAttendance(req, res)
+);
+
 module.exports = router;

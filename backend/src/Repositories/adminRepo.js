@@ -5,6 +5,7 @@ const Teacher = require("../../Database/models/Teacher");
 const Trainer = require("../../Database/models/Trainer");
 const Exam = require("../../Database/models/Exam");
 const ExamAttempt = require("../../Database/models/ExamAttempt");
+const Vehicle = require("../../Database/models/Vehicle");
 
 class AdminRepository {
 	// Get all pending students
@@ -190,6 +191,36 @@ class AdminRepository {
 				populate: { path: "userId", select: "name email phone" },
 			})
 			.sort({ attemptNumber: 1 });
+	}
+
+	// === Vehicle Management ===
+
+	// Create vehicle
+	async createVehicle(vehicleData) {
+		const vehicle = new Vehicle(vehicleData);
+		return await vehicle.save();
+	}
+
+	// Get all vehicles
+	async getAllVehicles() {
+		return await Vehicle.find().populate({
+			path: "assignedTrainerId",
+			populate: { path: "userId", select: "name" },
+		});
+	}
+
+	// Assign vehicle to trainer
+	async assignVehicleToTrainer(vehicleId, trainerId) {
+		return await Vehicle.findByIdAndUpdate(
+			vehicleId,
+			{ assignedTrainerId: trainerId },
+			{ new: true }
+		);
+	}
+
+	// Get vehicle by ID
+	async getVehicleById(vehicleId) {
+		return await Vehicle.findById(vehicleId);
 	}
 }
 

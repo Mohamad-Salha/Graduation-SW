@@ -96,6 +96,84 @@ class TrainerController {
 			return res.status(400).json({ error: error.message });
 		}
 	}
+
+	// === New Scheduling System ===
+
+	// POST /api/trainer/schedules
+	async createSchedule(req, res) {
+		try {
+			const userId = req.user.id;
+			const { weeklySlots, repeatForWeeks, vehicleId } = req.body;
+
+			if (
+				!weeklySlots ||
+				!Array.isArray(weeklySlots) ||
+				weeklySlots.length === 0
+			) {
+				return res.status(400).json({
+					error: "weeklySlots array is required and must not be empty",
+				});
+			}
+
+			// Validate each slot has required fields
+			for (const slot of weeklySlots) {
+				if (!slot.day || !slot.startTime || !slot.endTime) {
+					return res.status(400).json({
+						error: "Each slot must have day, startTime, and endTime",
+					});
+				}
+			}
+
+			const result = await trainerService.createPracticalSchedule(
+				userId,
+				{
+					weeklySlots,
+					repeatForWeeks: repeatForWeeks || 1,
+					vehicleId,
+				}
+			);
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/trainer/schedules
+	async getSchedules(req, res) {
+		try {
+			const userId = req.user.id;
+			const result = await trainerService.getSchedules(userId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// PUT /api/trainer/schedules/:scheduleId/slots/:slotId/attendance
+	async markSlotAttendance(req, res) {
+		try {
+			const userId = req.user.id;
+			const { scheduleId, slotId } = req.params;
+			const { attended, paymentAmount } = req.body;
+
+			if (typeof attended !== "boolean") {
+				return res.status(400).json({
+					error: "attended field is required and must be boolean",
+				});
+			}
+
+			const result = await trainerService.markSlotAttendance(
+				userId,
+				scheduleId,
+				slotId,
+				attended,
+				paymentAmount || 0
+			);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
 }
 
 module.exports = new TrainerController();

@@ -106,6 +106,105 @@ class StudentController {
 			return res.status(400).json({ error: error.message });
 		}
 	}
+
+	// === Practical Session Management ===
+
+	// GET /api/student/trainers - Get all available trainers
+	async getAvailableTrainers(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const result = await studentService.getAvailableTrainers(userId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// POST /api/student/choose-trainer - Choose trainer
+	async chooseTrainer(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const { trainerId } = req.body;
+
+			if (!trainerId) {
+				return res
+					.status(400)
+					.json({ error: "Trainer ID is required" });
+			}
+
+			const result = await studentService.chooseTrainer(
+				userId,
+				trainerId
+			);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/student/my-sessions - Get student's practical sessions
+	async getMyPracticalSessions(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const result = await studentService.getMyPracticalSessions(userId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// === New Booking System ===
+
+	// GET /api/student/available-slots - View available slots (optionally by trainer)
+	async getAvailableSlots(req, res) {
+		try {
+			const userId = req.user.id;
+			const { trainerId } = req.query; // Optional filter by trainer
+
+			const result = await studentService.viewAvailableSlots(
+				userId,
+				trainerId
+			);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// POST /api/student/book-slot - Book a practical slot
+	async bookSlot(req, res) {
+		try {
+			const userId = req.user.id;
+			const { scheduleId, slotId, sessionDate } = req.body;
+
+			if (!scheduleId || !slotId || !sessionDate) {
+				return res.status(400).json({
+					error: "scheduleId, slotId, and sessionDate are required",
+				});
+			}
+
+			const result = await studentService.bookPracticalSlot(
+				userId,
+				scheduleId,
+				slotId,
+				sessionDate
+			);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/student/my-bookings - Get student's booked sessions
+	async getMyBookings(req, res) {
+		try {
+			const userId = req.user.id;
+			const result = await studentService.getMyBookedSessions(userId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
 }
 
 module.exports = new StudentController();

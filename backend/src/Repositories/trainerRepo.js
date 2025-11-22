@@ -1,6 +1,7 @@
 const Trainer = require("../../Database/models/Trainer");
 const Student = require("../../Database/models/Student");
 const StudentSession = require("../../Database/models/StudentSession");
+const PracticalSchedule = require("../../Database/models/PracticalSchedule");
 const User = require("../../Database/models/User");
 
 class TrainerRepository {
@@ -124,6 +125,116 @@ class TrainerRepository {
 			trainerId,
 			attended: true,
 		});
+	}
+
+	// === New Practical Schedule System ===
+
+	// Create weekly schedule with recurring slots
+	async createPracticalSchedule(scheduleData) {
+		const schedule = new PracticalSchedule(scheduleData);
+		return await schedule.save();
+	}
+
+	// Get trainer's active schedules
+	async getTrainerSchedules(trainerId) {
+		return await PracticalSchedule.find({
+			trainerId,
+			isActive: true,
+		}).populate("weeklySlots.vehicleId", "model licensePlate");
+	}
+
+	// Get schedule by ID
+	async getScheduleById(scheduleId) {
+		return await PracticalSchedule.findById(scheduleId).populate(
+			"weeklySlots.vehicleId",
+			"model licensePlate"
+		);
+	}
+
+	// Get specific slot by schedule and slot ID
+	async getSlotById(scheduleId, slotId) {
+		const schedule = await PracticalSchedule.findById(scheduleId);
+		if (!schedule) return null;
+		return schedule.weeklySlots.id(slotId);
+	}
+
+	// Book a slot for student
+	async bookSlot(scheduleId, slotId, studentId, sessionDate) {
+		return await PracticalSchedule.findOneAndUpdate(
+			{ _id: scheduleId, "weeklySlots._id": slotId },
+			{
+				$set: {
+					"weeklySlots.$.isBooked": true,
+					"weeklySlots.$.bookedBy": studentId,
+					"weeklySlots.$.sessionDate": sessionDate,
+				},
+			},
+			{ new: true }
+		);
+	}
+
+	// Mark slot attendance
+	async markSlotAttendance(scheduleId, slotId, attended, paymentAmount) {
+		return await PracticalSchedule.findOneAndUpdate(
+			{ _id: scheduleId, "weeklySlots._id": slotId },
+			{
+				$set: {
+					"weeklySlots.$.attended": attended,
+					"weeklySlots.$.paymentAmount": paymentAmount || 0,
+				},
+			},
+			{ new: true }
+		);
+	}
+
+	// Get student's booked sessions from all schedules
+	async getStudentBookedSlots(studentId) {
+		return await PracticalSchedule.find({
+			"weeklySlots.bookedBy": studentId,
+			isActive: true,
+		})
+			.populate("trainerId")
+			.populate({
+				path: "trainerId",
+				populate: { path: "userId", select: "name email phone" },
+			})
+			.populate("weeklySlots.vehicleId", "model licensePlate");
+	}
+
+	// Count student bookings for current week
+	async countWeeklyBookings(studentId, weekStart, weekEnd) {
+		const schedules = await PracticalSchedule.find({
+			"weeklySlots.bookedBy": studentId,
+			"weeklySlots.sessionDate": {
+				$gte: weekStart,
+				$lte: weekEnd,
+			},
+		});
+
+		let count = 0;
+		schedules.forEach((schedule) => {
+			schedule.weeklySlots.forEach((slot) => {
+				if (
+					slot.bookedBy &&
+					slot.bookedBy.toString() === studentId.toString() &&
+					slot.sessionDate >= weekStart &&
+					slot.sessionDate <= weekEnd
+				) {
+					count++;
+				}
+			});
+		});
+
+		return count;
+	}
+
+	// Update schedule (e.g., deactivate)
+	async updateSchedule(scheduleId, updateData) {
+		return await PracticalSchedule.findByIdAndUpdate(
+			scheduleId,
+			updateData,
+			{ new: true }
+		);
 	}
 }
 

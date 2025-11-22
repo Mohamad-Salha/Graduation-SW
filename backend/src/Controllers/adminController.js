@@ -227,10 +227,67 @@ class AdminController {
 	}
 
 	// GET /api/admin/exams/:examId/attempts
+	// GET /api/admin/exams/:examId/attempts
 	async getExamAttempts(req, res) {
 		try {
 			const { examId } = req.params;
 			const result = await adminService.getExamAttempts(examId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// === Vehicle Management ===
+
+	// POST /api/admin/vehicles
+	async createVehicle(req, res) {
+		try {
+			const { model, licensePlate, type } = req.body;
+
+			if (!model || !licensePlate) {
+				return res.status(400).json({
+					error: "Model and license plate are required",
+				});
+			}
+
+			const result = await adminService.createVehicle({
+				model,
+				licensePlate,
+				type,
+			});
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/admin/vehicles
+	async getAllVehicles(req, res) {
+		try {
+			const result = await adminService.getAllVehicles();
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// PUT /api/admin/vehicles/:vehicleId/assign
+	async assignVehicleToTrainer(req, res) {
+		try {
+			const { vehicleId } = req.params;
+			const { trainerId } = req.body;
+
+			if (!trainerId) {
+				return res
+					.status(400)
+					.json({ error: "Trainer ID is required" });
+			}
+
+			const result = await adminService.assignVehicleToTrainer(
+				vehicleId,
+				trainerId
+			);
 			return res.status(200).json(result);
 		} catch (error) {
 			return res.status(400).json({ error: error.message });

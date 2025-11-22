@@ -1,45 +1,40 @@
 /**
- * Example JSON response (PracticalSchedule)
- * {
- *   "_id": "6744c2f4e13b2a9f3c5d1401",
- *   "trainerId": "6744c2f4e13b2a9f3c5d5001", // Trainer ObjectId
- *   "week": 47,
- *   "sessions": [
- *     {
- *       "_id": "6744c2f4e13b2a9f3c5d1402",
- *       "date": "2025-11-24T08:00:00.000Z",
- *       "time": "08:00",
- *       "available": false,
- *       "studentId": "6744c2f4e13b2a9f3c5d3001", // Student ObjectId
- *       "vehicleId": "6744c2f4e13b2a9f3c5d6001" // Vehicle ObjectId
- *     },
- *     {
- *       "_id": "6744c2f4e13b2a9f3c5d1403",
- *       "date": "2025-11-25T10:00:00.000Z",
- *       "time": "10:00",
- *       "available": true,
- *       "studentId": null,
- *       "vehicleId": "6744c2f4e13b2a9f3c5d6002"
- *     }
- *   ],
- *   "__v": 0
- * }
+ * PracticalSchedule - Trainer's weekly availability schedule
+ * Trainers create recurring weekly schedules that students can book
  */
 const mongoose = require("../connection");
 const { Schema } = mongoose;
 
+const TimeSlotSchema = new Schema({
+	day: {
+		type: String,
+		enum: [
+			"Sunday",
+			"Monday",
+			"Tuesday",
+			"Wednesday",
+			"Thursday",
+			"Friday",
+			"Saturday",
+		],
+		required: true,
+	},
+	startTime: { type: String, required: true }, // e.g., "09:00"
+	endTime: { type: String, required: true }, // e.g., "10:00"
+	vehicleId: { type: Schema.Types.ObjectId, ref: "Vehicle" },
+	isBooked: { type: Boolean, default: false },
+	bookedBy: { type: Schema.Types.ObjectId, ref: "Student" },
+	attended: { type: Boolean, default: false },
+	paymentAmount: { type: Number, default: 0 },
+	sessionDate: { type: Date }, // Actual date when slot is booked
+});
+
 const PracticalScheduleSchema = new Schema({
 	trainerId: { type: Schema.Types.ObjectId, ref: "Trainer", required: true },
-	week: { type: Number },
-	sessions: [
-		{
-			date: { type: Date, required: true },
-			time: { type: String, required: true },
-			available: { type: Boolean, default: true },
-			studentId: { type: Schema.Types.ObjectId, ref: "Student" },
-			vehicleId: { type: Schema.Types.ObjectId, ref: "Vehicle" },
-		},
-	],
+	weeklySlots: [TimeSlotSchema],
+	repeatForWeeks: { type: Number, default: 1 }, // How many weeks this schedule repeats
+	isActive: { type: Boolean, default: true },
+	createdAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("PracticalSchedule", PracticalScheduleSchema);

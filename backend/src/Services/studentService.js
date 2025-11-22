@@ -243,6 +243,248 @@ class StudentService {
 			status: attempt.status,
 		};
 	}
+
+	// === Practical Session Management ===
+
+	// Get available trainers
+	async getAvailableTrainers(userId) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		if (!student.theoPassed) {
+			throw new Error(
+				"You must pass the theoretical exam before choosing a trainer"
+			);
+		}
+
+		const trainers = await studentRepo.getAllTrainers();
+		return {
+			count: trainers.length,
+			trainers: trainers.map((t) => ({
+				trainerId: t._id,
+				name: t.userId.name,
+				email: t.userId.email,
+				phone: t.userId.phone,
+				assignedStudentsCount: t.assignedStudents.length,
+			})),
+		};
+	}
+
+	// Choose trainer
+	async chooseTrainer(userId, trainerId) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		if (!student.theoPassed) {
+			throw new Error(
+				"You must pass the theoretical exam before choosing a trainer"
+			);
+		}
+
+		if (student.trainerId) {
+			throw new Error("You already have a trainer assigned");
+		}
+
+		// Check if trainer exists
+		const trainer = await studentRepo.getTrainerById(trainerId);
+		if (!trainer) {
+			throw new Error("Trainer not found");
+		}
+
+		// Assign trainer to student
+		await studentRepo.assignTrainer(student._id, trainerId);
+
+		// Add student to trainer's assigned students
+		await studentRepo.addStudentToTrainer(trainerId, student._id);
+
+		return {
+			message: "Successfully chose trainer",
+			studentId: student._id,
+			trainer: {
+				trainerId: trainer._id,
+				name: trainer.userId.name,
+				email: trainer.userId.email,
+			},
+		};
+	}
+
+	// === New Practical Booking System ===
+
+	// View available slots from all trainers or specific trainer
+	async viewAvailableSlots(userId, trainerId = null) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		if (!student.theoPassed) {
+			throw new Error(
+				"You must pass the theoretical exam before booking practical sessions"
+			);
+		}
+
+		const schedules = await studentRepo.getTrainerAvailableSlots(trainerId);
+
+		const availableSlots = [];
+		schedules.forEach((schedule) => {
+			schedule.weeklySlots.forEach((slot) => {
+				if (!slot.isBooked) {
+					availableSlots.push({
+						scheduleId: schedule._id,
+						slotId: slot._id,
+						trainerId: schedule.trainerId._id,
+						trainerName: schedule.trainerId.userId.name,
+						day: slot.day,
+						startTime: slot.startTime,
+						endTime: slot.endTime,
+						vehicle: slot.vehicleId
+							? `${slot.vehicleId.model} (${slot.vehicleId.licensePlate})`
+							: "N/A",
+					});
+				}
+			});
+		});
+
+		return {
+			count: availableSlots.length,
+			slots: availableSlots,
+		};
+	}
+
+	// Book a practical slot
+	async bookPracticalSlot(userId, scheduleId, slotId, sessionDate) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		if (!student.theoPassed) {
+			throw new Error(
+				"You must pass the theoretical exam before booking practical sessions"
+			);
+		}
+
+		// Check weekly booking limit
+		const currentWeekBookings = await studentRepo.countWeeklyBookings(
+			student._id
+		);
+		if (currentWeekBookings >= student.maxSessionsPerWeek) {
+			throw new Error(
+				`You have reached your weekly booking limit of ${student.maxSessionsPerWeek} sessions`
+			);
+		}
+
+		// Get schedule and validate
+		const schedule = await studentRepo.getScheduleById(scheduleId);
+		if (!schedule) {
+			throw new Error("Schedule not found");
+		}
+
+		if (!schedule.isActive) {
+			throw new Error("This schedule is no longer active");
+		}
+
+		const slot = schedule.weeklySlots.id(slotId);
+		if (!slot) {
+			throw new Error("Slot not found");
+		}
+
+		if (slot.isBooked) {
+			throw new Error("This slot is already booked");
+		}
+
+		// Book the slot
+		await studentRepo.bookSlot(
+			scheduleId,
+			slotId,
+			student._id,
+			sessionDate
+		);
+
+		return {
+			message: "Slot booked successfully",
+			scheduleId,
+			slotId,
+			sessionDate,
+			trainerName: schedule.trainerId.userId.name,
+			day: slot.day,
+			time: `${slot.startTime} - ${slot.endTime}`,
+		};
+	}
+
+	// Get student's booked sessions
+	async getMyBookedSessions(userId) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		const schedules = await studentRepo.getStudentBookedSlots(student._id);
+
+		const bookedSessions = [];
+		schedules.forEach((schedule) => {
+			schedule.weeklySlots.forEach((slot) => {
+				if (
+					slot.bookedBy &&
+					slot.bookedBy.toString() === student._id.toString()
+				) {
+					bookedSessions.push({
+						scheduleId: schedule._id,
+						slotId: slot._id,
+						trainerId: schedule.trainerId._id,
+						trainerName: schedule.trainerId.userId.name,
+						day: slot.day,
+						startTime: slot.startTime,
+						endTime: slot.endTime,
+						sessionDate: slot.sessionDate,
+						attended: slot.attended,
+						paymentAmount: slot.paymentAmount,
+						vehicle: slot.vehicleId
+							? `${slot.vehicleId.model} (${slot.vehicleId.licensePlate})`
+							: "N/A",
+					});
+				}
+			});
+		});
+
+		return {
+			count: bookedSessions.length,
+			sessions: bookedSessions,
+			practicalProgress: student.practicalProgress,
+			sessionsCompleted: student.practicalSessionsCompleted,
+			minRequiredSessions:
+				student.chosenLicense?.minPracticalSessions || 0,
+		};
+	}
+
+	// Old method kept for backward compatibility
+	async getMyPracticalSessions(userId) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		const sessions = await studentRepo.getMyPracticalSessions(student._id);
+
+		return {
+			count: sessions.length,
+			sessions: sessions.map((s) => ({
+				sessionId: s._id,
+				trainerName: s.trainerId?.userId?.name || "N/A",
+				date: s.date,
+				time: s.time,
+				attended: s.attended,
+				paymentAmount: s.paymentAmount,
+				vehicle: s.vehicleId
+					? `${s.vehicleId.model} (${s.vehicleId.licensePlate})`
+					: "N/A",
+			})),
+		};
+	}
 }
 
 module.exports = new StudentService();

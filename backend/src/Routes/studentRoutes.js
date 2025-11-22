@@ -41,4 +41,36 @@ router.post("/request-retest", (req, res) =>
 	studentController.requestRetest(req, res)
 );
 
+// === Practical Session Routes ===
+
+// GET /api/student/trainers - Get all available trainers
+router.get("/trainers", (req, res) =>
+	studentController.getAvailableTrainers(req, res)
+);
+
+// POST /api/student/choose-trainer - Choose trainer
+router.post("/choose-trainer", (req, res) =>
+	studentController.chooseTrainer(req, res)
+);
+
+// GET /api/student/my-sessions - Get student's practical sessions
+router.get("/my-sessions", (req, res) =>
+	studentController.getMyPracticalSessions(req, res)
+);
+
+// === New Booking System ===
+
+// GET /api/student/available-slots - View available slots (optionally filter by trainer)
+router.get("/available-slots", (req, res) =>
+	studentController.getAvailableSlots(req, res)
+);
+
+// POST /api/student/book-slot - Book a practical slot
+router.post("/book-slot", (req, res) => studentController.bookSlot(req, res));
+
+// GET /api/student/my-bookings - Get student's booked sessions
+router.get("/my-bookings", (req, res) =>
+	studentController.getMyBookings(req, res)
+);
+
 module.exports = router;
