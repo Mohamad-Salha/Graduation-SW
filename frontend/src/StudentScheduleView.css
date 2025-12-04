@@ -1,0 +1,92 @@
+.schedule-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  padding: 20px;
+  color: white;
+  font-family: "Inter";
+}
+
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back-btn {
+  padding: 0.6rem 1.2rem;
+  background: white;
+  color: #4f46e5;
+  border: none;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: #e0e7ff;
+}
+
+.student-info-box {
+  margin-top: 1rem;
+  background: rgba(255,255,255,0.1);
+  padding: 1rem;
+  border-radius: 14px;
+  line-height: 1.6;
+}
+
+.date-select {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date-select input {
+  padding: 0.4rem;
+  border-radius: 10px;
+  border: none;
+}
+
+.schedule-wrapper {
+  margin-top: 1rem;
+  background: white;
+  padding: 1.2rem;
+  border-radius: 16px;
+  color: #1f2937;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.highlight-row {
+  background: #dbeafe;
+  font-weight: bold;
+}
+
+.badge {
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.badge.available { background: #dcfce7; color: #166534; }
+.badge.booked { background: #dbeafe; color: #1e40af; }
+.badge.waiting { background: #fef9c3; color: #854d0e; }
+.badge.progress { background: #cffafe; color: #0e7490; }
+.badge.completed { background: #e5e7eb; color: #374151; }
+
+.empty {
+  text-align: center;
+  padding: 1rem;
+  color: #ddd;
+}
