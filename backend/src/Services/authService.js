@@ -40,16 +40,16 @@ class AuthService {
 
 	// Login for all roles
 	async login(email, password) {
-		// Find user by email
-		const user = await authRepo.findUserByEmail(email);
+		// Find user by email or name
+		const user = await authRepo.findUserByEmailOrName(email);
 		if (!user) {
-			throw new Error("Invalid email or password");
+			throw new Error("Invalid email/username or password");
 		}
 
 		// Check password
 		const isPasswordValid = await bcrypt.compare(password, user.password);
 		if (!isPasswordValid) {
-			throw new Error("Invalid email or password");
+			throw new Error("Invalid email/username or password");
 		}
 
 		// If student, check approval status

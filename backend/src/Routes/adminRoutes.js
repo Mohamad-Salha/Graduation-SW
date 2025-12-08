@@ -75,6 +75,11 @@ router.get("/students/ready-practical", (req, res) =>
 	adminController.getStudentsReadyForPracticalExam(req, res)
 );
 
+// PUT /api/admin/students/:studentId/theo-pass - Mark student as passed theoretical exam
+router.put("/students/:studentId/theo-pass", (req, res) =>
+	adminController.markStudentTheoPassed(req, res)
+);
+
 // PUT /api/admin/exam-attempts/:attemptId/result - Record exam result
 router.put("/exam-attempts/:attemptId/result", (req, res) =>
 	adminController.recordExamResult(req, res)

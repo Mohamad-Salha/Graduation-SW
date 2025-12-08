@@ -8,6 +8,13 @@ class AuthRepository {
 		return await User.findOne({ email });
 	}
 
+	// Find user by email or name
+	async findUserByEmailOrName(emailOrName) {
+		return await User.findOne({
+			$or: [{ email: emailOrName }, { name: emailOrName }],
+		});
+	}
+
 	// Create new user
 	async createUser(userData) {
 		const user = new User(userData);

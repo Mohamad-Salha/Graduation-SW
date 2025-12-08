@@ -267,6 +267,29 @@ class AdminService {
 		};
 	}
 
+	// Mark student as passed theoretical exam (direct method)
+	async markStudentTheoPassed(studentId) {
+		const student = await adminRepo.findStudentById(studentId);
+		if (!student) {
+			throw new Error("Student not found");
+		}
+
+		if (!student.readyForTheoExam) {
+			throw new Error("Student is not ready for theoretical exam");
+		}
+
+		if (student.theoPassed) {
+			throw new Error("Student already passed theoretical exam");
+		}
+
+		await adminRepo.markStudentTheoPassed(studentId);
+
+		return {
+			message: "Student marked as passed theoretical exam",
+			studentId,
+		};
+	}
+
 	// Record exam result
 	async recordExamResult(attemptId, status) {
 		const attempt = await adminRepo.getExamAttemptById(attemptId);

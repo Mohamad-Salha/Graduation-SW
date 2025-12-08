@@ -211,6 +211,17 @@ class AdminController {
 		}
 	}
 
+	// PUT /api/admin/students/:studentId/theo-pass
+	async markStudentTheoPassed(req, res) {
+		try {
+			const { studentId } = req.params;
+			const result = await adminService.markStudentTheoPassed(studentId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
 	// PUT /api/admin/exam-attempts/:attemptId/result
 	async recordExamResult(req, res) {
 		try {
