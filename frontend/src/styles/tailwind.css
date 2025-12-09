@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background Colors */
+    --color-background: #ffffff; /* white */
+    --color-foreground: #1f2937; /* gray-800 */
+    --color-surface: #f8fafc; /* slate-50 */
+    
+    /* Primary Colors - Trust Anchor */
+    --color-primary: #1e3a8a; /* blue-900 */
+    --color-primary-foreground: #ffffff; /* white */
+    
+    /* Secondary Colors - Supporting Elements */
+    --color-secondary: #3b82f6; /* blue-500 */
+    --color-secondary-foreground: #ffffff; /* white */
+    
+    /* Accent Colors - Conversion CTAs */
+    --color-accent: #f97316; /* orange-500 */
+    --color-accent-foreground: #ffffff; /* white */
+    
+    /* Success Colors - Progress Indicators */
+    --color-success: #10b981; /* emerald-500 */
+    --color-success-foreground: #ffffff; /* white */
+    
+    /* Warning Colors - Urgency Elements */
+    --color-warning: #f59e0b; /* amber-500 */
+    --color-warning-foreground: #ffffff; /* white */
+    
+    /* Error Colors - Validation Feedback */
+    --color-error: #ef4444; /* red-500 */
+    --color-error-foreground: #ffffff; /* white */
+    
+    /* Destructive Colors */
+    --color-destructive: #ef4444; /* red-500 */
+    --color-destructive-foreground: #ffffff; /* white */
+    
+    /* Muted Colors - Supporting Information */
+    --color-muted: #f1f5f9; /* slate-100 */
+    --color-muted-foreground: #6b7280; /* gray-500 */
+    
+    /* Card Colors */
+    --color-card: #ffffff; /* white */
+    --color-card-foreground: #1f2937; /* gray-800 */
+    
+    /* Popover Colors */
+    --color-popover: #ffffff; /* white */
+    --color-popover-foreground: #1f2937; /* gray-800 */
+    
+    /* Border Colors */
+    --color-border: #e5e7eb; /* gray-200 */
+    --color-input: #e5e7eb; /* gray-200 */
+    
+    /* Ring Colors - Focus States */
+    --color-ring: #3b82f6; /* blue-500 */
+    
+    /* Radius */
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Typography Utilities */
+  .font-headline {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .font-accent {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Shadow Utilities - Conversion-focused */
+  .shadow-cta {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .shadow-card {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Animation Utilities */
+  .transition-smooth {
+    transition: all 200ms ease-in-out;
+  }
+  
+  .transition-fade {
+    transition: opacity 300ms ease-in-out;
+  }
+  
+  /* Hover Transform */
+  .hover-lift {
+    @apply transition-smooth;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+}
