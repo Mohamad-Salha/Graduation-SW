@@ -7,13 +7,13 @@ interface FAQ {
   id: number;
   question: string;
   answer: string;
-  category: 'student' | 'parent' | 'general';
+  category: 'student' | 'instructor' | 'general';
 }
 
 const FAQSection = () => {
   const [isHydrated, setIsHydrated] = useState(false);
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-  const [activeCategory, setActiveCategory] = useState<'student' | 'parent' | 'general'>('student');
+  const [activeCategory, setActiveCategory] = useState<'student' | 'instructor' | 'general'>('student');
 
   useEffect(() => {
     setIsHydrated(true);
@@ -40,21 +40,21 @@ const FAQSection = () => {
     },
     {
       id: 4,
-      question: "How can I monitor my teen's progress?",
-      answer: "The parent portal provides real-time access to lesson summaries, skill assessments, and instructor feedback. You'll receive notifications after each lesson with detailed progress reports, and you can message instructors directly through the app.",
-      category: 'parent',
+      question: "How do I manage my assigned students?",
+      answer: "The instructor dashboard provides a comprehensive view of all your assigned students. You can track their progress, mark them ready for exams, view session history, and communicate directly through the platform. Everything is organized and easy to access.",
+      category: 'instructor',
     },
     {
       id: 5,
-      question: "Is the payment information secure?",
-      answer: "Absolutely. We use bank-level encryption and are PCI DSS compliant. All payment information is processed through secure, industry-standard payment gateways. We never store your full credit card details on our servers.",
-      category: 'parent',
+      question: "How does the payment system work for instructors?",
+      answer: "The system automatically tracks all your sessions and calculates payments. You can view detailed payment history, pending amounts, and receive automated notifications. All financial information is secure and transparent.",
+      category: 'instructor',
     },
     {
       id: 6,
-      question: "Can I track lesson locations in real-time?",
-      answer: "Yes, for safety and transparency, you can see the real-time location of driving lessons through the parent portal. You'll also receive notifications when lessons start and end, along with the route taken during the lesson.",
-      category: 'parent',
+      question: "Can I manage my schedule and availability?",
+      answer: "Yes! You have full control over your schedule. Set your available time slots, assign vehicles, and students can book sessions during your availability. The system prevents double-booking and sends automatic reminders.",
+      category: 'instructor',
     },
     {
       id: 7,
@@ -105,12 +105,12 @@ const FAQSection = () => {
               Students
             </button>
             <button
-              onClick={() => setActiveCategory('parent')}
+              onClick={() => setActiveCategory('instructor')}
               className={`px-6 py-3 rounded-lg text-sm font-body font-body-medium transition-smooth ${
-                activeCategory === 'parent' ?'bg-primary text-primary-foreground shadow-cta' :'bg-card text-foreground hover:bg-muted'
+                activeCategory === 'instructor' ?'bg-primary text-primary-foreground shadow-cta' :'bg-card text-foreground hover:bg-muted'
               }`}
             >
-              Parents
+              Instructors
             </button>
             <button
               onClick={() => setActiveCategory('general')}

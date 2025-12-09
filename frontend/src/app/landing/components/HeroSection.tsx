@@ -33,12 +33,17 @@ const HeroSection = ({ onRoleSelect }: HeroSectionProps) => {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-              <Link
-                href="#get-started"
-                className="w-full sm:w-auto px-8 py-4 text-base font-body font-cta text-accent-foreground bg-accent rounded-lg shadow-cta hover-lift hover:bg-accent/90 transition-smooth"
+              <button
+                onClick={() => {
+                  const getStartedSection = document.getElementById('get-started');
+                  if (getStartedSection) {
+                    getStartedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+                className="w-full sm:w-auto px-8 py-4 text-base font-body font-cta text-accent-foreground bg-accent rounded-lg shadow-cta hover:bg-accent/90 hover:scale-105 active:scale-95 transition-all duration-300 ease-in-out transform"
               >
                 Start Learning Today
-              </Link>
+              </button>
               <button
                 onClick={() => {
                   const videoSection = document.getElementById('how-it-works');
@@ -46,7 +51,7 @@ const HeroSection = ({ onRoleSelect }: HeroSectionProps) => {
                     videoSection.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="w-full sm:w-auto px-8 py-4 text-base font-body font-body-medium text-primary-foreground bg-background/20 backdrop-blur-sm border-2 border-primary-foreground/30 rounded-lg hover-lift hover:bg-background/30 transition-smooth"
+                className="w-full sm:w-auto px-8 py-4 text-base font-body font-body-medium text-primary-foreground bg-background/20 backdrop-blur-sm border-2 border-primary-foreground/30 rounded-lg hover:bg-background/30 hover:scale-105 active:scale-95 transition-all duration-300 ease-in-out transform"
               >
                 See How It Works
               </button>

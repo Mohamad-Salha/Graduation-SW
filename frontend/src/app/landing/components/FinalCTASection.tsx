@@ -7,7 +7,7 @@ import RoleSelector from '@/components/common/RoleSelector';
 
 const FinalCTASection = () => {
   const [isHydrated, setIsHydrated] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'student' | 'parent' | 'school'>('student');
+  const [selectedRole, setSelectedRole] = useState<'student' | 'instructor' | 'admin'>('student');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
