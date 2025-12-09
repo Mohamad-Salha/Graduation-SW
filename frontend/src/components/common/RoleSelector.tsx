@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
 
-export type UserRole = 'student' | 'parent' | 'school';
+export type UserRole = 'student' | 'instructor' | 'trainer';
 
 interface RoleSelectorProps {
   onRoleChange?: (role: UserRole) => void;
@@ -30,27 +30,25 @@ const RoleSelector = ({
       id: 'student',
       label: 'Student',
       icon: 'AcademicCapIcon',
-      description: 'Learn to drive with confidence',
+      description: 'Learn driving skills step by step',
     },
     {
-      id: 'parent',
-      label: 'Parent',
-      icon: 'UserGroupIcon',
-      description: 'Track your teen\'s progress',
+      id: 'instructor',
+      label: 'Instructor',
+      icon: 'UserIcon',
+      description: 'Teach and guide students',
     },
     {
-      id: 'school',
-      label: 'Driving School',
-      icon: 'BuildingOfficeIcon',
-      description: 'Manage your business efficiently',
+      id: 'trainer',
+      label: 'Trainer',
+      icon: 'BriefcaseIcon',
+      description: 'Manage training sessions and evaluations',
     },
   ];
 
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
-    if (onRoleChange) {
-      onRoleChange(role);
-    }
+    onRoleChange?.(role);
   };
 
   return (
@@ -59,6 +57,7 @@ const RoleSelector = ({
         <h3 className="text-lg font-headline font-headline-semibold text-foreground text-center">
           I am a...
         </h3>
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl">
           {roles.map((role) => (
             <button
@@ -79,16 +78,19 @@ const RoleSelector = ({
               >
                 <Icon name={role.icon as any} size={24} variant="outline" />
               </div>
+
               <span
-                className={`text-base font-body font-body-medium mb-1 transition-smooth ${
+                className={`text-base font-body font-body-medium mb-1 ${
                   selectedRole === role.id ? 'text-primary' : 'text-foreground'
                 }`}
               >
                 {role.label}
               </span>
+
               <span className="text-sm text-muted-foreground text-center">
                 {role.description}
               </span>
+
               {selectedRole === role.id && (
                 <div className="absolute top-3 right-3">
                   <div className="flex items-center justify-center w-6 h-6 bg-success rounded-full">

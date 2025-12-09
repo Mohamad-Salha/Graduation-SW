@@ -118,6 +118,12 @@ const Header = ({ className = '' }: HeaderProps) => {
 
             <div className="hidden lg:flex items-center space-x-4">
               <Link
+                href="/login"
+                className="px-6 py-2.5 text-sm font-body font-body-medium text-white bg-success rounded-lg shadow-md hover:bg-success/90 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+              >
+                Login
+              </Link>
+              <Link
                 href="#get-started"
                 onClick={(e) => handleNavClick(e, '#get-started')}
                 className="px-6 py-2.5 text-sm font-body font-cta text-accent-foreground bg-accent rounded-lg shadow-cta hover-lift hover:bg-accent/90 transition-smooth"
@@ -165,7 +171,13 @@ const Header = ({ className = '' }: HeaderProps) => {
                 </a>
               ))}
               
-              <div className="pt-4 mt-4 border-t border-border">
+              <div className="pt-4 mt-4 border-t border-border space-y-3">
+                <Link
+                  href="/login"
+                  className="block w-full px-6 py-3 text-center text-base font-body font-body-medium text-white bg-success rounded-lg shadow-md hover:bg-success/90 hover:shadow-lg active:scale-95 transition-all duration-200"
+                >
+                  Login
+                </Link>
                 <Link
                   href="#get-started"
                   onClick={(e) => handleNavClick(e, '#get-started')}
