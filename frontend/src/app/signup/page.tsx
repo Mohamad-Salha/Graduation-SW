@@ -54,7 +54,10 @@ const SignupPage = () => {
   };
 
   const validatePassword = (value: string): boolean => {
-    return value.length >= 6;
+    if (value.length <= 8) return false;
+    const hasLetter = /[a-zA-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    return hasLetter && hasNumber;
   };
 
   const validatePhone = (value: string): boolean => {
@@ -271,7 +274,7 @@ const SignupPage = () => {
                         ? 'border-red-500 bg-red-50/30'
                         : 'border-gray-300 bg-white'
                     }`}
-                    placeholder="Min. 6 characters"
+                    placeholder="Enter a strong password"
                     required
                   />
                   <button
@@ -281,6 +284,26 @@ const SignupPage = () => {
                   >
                     {showPassword ? '🙈' : '👁️'}
                   </button>
+                </div>
+                <div className="mt-2 space-y-1">
+                  <p className={`text-xs flex items-center gap-1 ${
+                    formData.password.length > 8 ? 'text-green-600' : 'text-gray-500'
+                  }`}>
+                    {formData.password.length > 8 ? '✓' : '○'} More than 8 characters
+                  </p>
+                  <p className={`text-xs flex items-center gap-1 ${
+                    /[a-zA-Z]/.test(formData.password) ? 'text-green-600' : 'text-gray-500'
+                  }`}>
+                    {/[a-zA-Z]/.test(formData.password) ? '✓' : '○'} Contains at least one letter
+                  </p>
+                  <p className={`text-xs flex items-center gap-1 ${
+                    /[0-9]/.test(formData.password) ? 'text-green-600' : 'text-gray-500'
+                  }`}>
+                    {/[0-9]/.test(formData.password) ? '✓' : '○'} Contains at least one number
+                  </p>
+                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                    ○ Symbols are optional but recommended
+                  </p>
                 </div>
               </div>
 

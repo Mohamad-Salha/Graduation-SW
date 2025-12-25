@@ -7,7 +7,7 @@ import Icon from '@/components/ui/AppIcon';
 import api from '@/services/api';
 import { setAuthToken, setUserData } from '@/utils/auth';
 
-type UserRole = 'student' | 'parent' | 'instructor' | 'admin';
+type UserRole = 'student' | 'trainer' | 'instructor' | 'admin';
 
 interface ValidationState {
   email: boolean | null;
@@ -37,8 +37,8 @@ const LoginPage = () => {
       borderColor: 'border-primary',
     },
     {
-      id: 'parent' as UserRole,
-      label: 'Parent',
+      id: 'trainer' as UserRole,
+      label: 'Trainer',
       icon: 'UserGroupIcon',
       color: 'bg-secondary',
       hoverColor: 'hover:bg-secondary/90',

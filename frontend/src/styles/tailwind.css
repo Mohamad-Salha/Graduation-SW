@@ -131,6 +131,14 @@
     animation: fadeIn 0.3s ease-in-out;
   }
 
+  .bg-main-content {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-primary) 6%, white),
+      color-mix(in srgb, var(--color-secondary) 10%, white)
+    );
+  }
+
   @keyframes fadeIn {
     from {
       opacity: 0;
