@@ -1,10 +1,21 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-mongoose.connect("mongodb+srv://Mohamad:100200300xyz@swgraduationproject.ieuyry3.mongodb.net/?appName=SWGraduationProject")
-.then(() => {
-	console.log("Connected to MongoDB successfully");
-}).catch((err) => {
-	console.error("Error connecting to MongoDB:", err);
-});
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+	console.error("ERROR: MONGODB_URI is not defined in environment variables");
+	process.exit(1);
+}
+
+mongoose
+	.connect(MONGODB_URI)
+	.then(() => {
+		console.log("Connected to MongoDB successfully");
+	})
+	.catch((err) => {
+		console.error("Error connecting to MongoDB:", err);
+		process.exit(1);
+	});
 
 module.exports = mongoose;

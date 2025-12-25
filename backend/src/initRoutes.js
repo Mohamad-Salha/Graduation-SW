@@ -3,6 +3,7 @@ const adminRoutes = require("./Routes/adminRoutes");
 const studentRoutes = require("./Routes/studentRoutes");
 const teacherRoutes = require("./Routes/teacherRoutes");
 const trainerRoutes = require("./Routes/trainerRoutes");
+const paymentRoutes = require("./Routes/paymentRoutes");
 
 function initRoutes(app) {
 	// Authentication routes
@@ -19,6 +20,9 @@ function initRoutes(app) {
 
 	// Trainer routes
 	app.use("/api/trainer", trainerRoutes);
+
+	// Payment routes
+	app.use("/api/student/payment", paymentRoutes);
 
 	// Health check
 	app.get("/", (req, res) => {
