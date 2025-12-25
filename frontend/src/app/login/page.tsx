@@ -91,20 +91,36 @@ const LoginPage = () => {
     setError('');
 
     try {
-      const result = await api.auth.login(email, password);
+      // Call backend API directly
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+      }
+
+      const result = await response.json();
       
       // Store token and user data
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('user', JSON.stringify(result.user));
       setAuthToken(result.token);
       setUserData({
-        name: result.name,
-        email: result.email,
-        role: result.role,
+        name: result.user.name,
+        email: result.user.email,
+        role: result.user.role,
       });
 
       // Redirect based on role
-      switch (result.role) {
+      switch (result.user.role) {
         case 'admin':
-          router.push('/manager/dashboard');
+          router.push('/admin/dashboard');
           break;
         case 'student':
           router.push('/student/dashboard');
