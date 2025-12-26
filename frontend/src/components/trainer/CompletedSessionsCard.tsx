@@ -1,4 +1,8 @@
-export default function CompletedSessionsCard() {
+interface CompletedSessionsCardProps {
+  count?: number;
+}
+
+export default function CompletedSessionsCard({ count = 0 }: CompletedSessionsCardProps) {
   return (
     <div className="bg-amber-50 border border-amber-200 rounded-lg p-5 shadow-card hover-lift">
       <div className="flex items-center justify-between mb-3">
@@ -7,7 +11,7 @@ export default function CompletedSessionsCard() {
           <span className="text-xl">✅</span>
         </div>
       </div>
-      <div className="text-3xl font-bold text-warning mb-1">{0}</div>
+      <div className="text-3xl font-bold text-warning mb-1">{count}</div>
       <div className="text-xs text-muted-foreground">Total completed</div>
     </div>
   );

@@ -1,24 +1,55 @@
 'use client';
 
 import { useState } from 'react';
+import { updateStudentProfile } from '@/services/api/student/profile';
+import { updateTeacherProfile } from '@/services/api/teacher/profile';
+import { updateTrainerProfile } from '@/services/api/trainer/profile';
+import { getUserData } from '@/utils/auth';
 
 interface EditProfileModalProps {
+  user: any;
   onClose: () => void;
+  onUpdate: (updatedData: any) => void;
 }
 
-export default function EditProfileModal({ onClose }: EditProfileModalProps) {
+export default function EditProfileModal({ user, onClose, onUpdate }: EditProfileModalProps) {
   const [formData, setFormData] = useState({
-    name: 'John Doe',
-    phone: '+1 123 456 7890',
-    address: '525 E 68th Street, New York, NY',
-    dateOfBirth: '1992-06-05',
+    name: user?.name || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
+    dateOfBirth: user?.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const userData = getUserData();
+  const userRole = userData?.role;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Call API to update profile
-    console.log('Update profile:', formData);
-    onClose();
+    setLoading(true);
+    setError(null);
+
+    try {
+      let updatedProfile;
+      
+      // Call appropriate API based on role
+      if (userRole === 'student') {
+        updatedProfile = await updateStudentProfile(formData);
+      } else if (userRole === 'teacher') {
+        updatedProfile = await updateTeacherProfile(formData);
+      } else if (userRole === 'trainer') {
+        updatedProfile = await updateTrainerProfile(formData);
+      }
+
+      onUpdate(updatedProfile);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || 'Failed to update profile');
+      console.error('Profile update error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,19 +121,27 @@ export default function EditProfileModal({ onClose }: EditProfileModalProps) {
             />
           </div>
 
+          {error && (
+            <div className="mb-4 p-3 bg-red-600/20 border border-red-600/50 rounded-lg text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
           <div className="flex gap-4 mt-8">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all duration-300 font-medium hover:scale-105 shadow-lg"
+              disabled={loading}
+              className="flex-1 px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all duration-300 font-medium hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg hover:from-blue-500 hover:to-blue-600 transition-all duration-300 font-medium hover:scale-105 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50"
+              disabled={loading}
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg hover:from-blue-500 hover:to-blue-600 transition-all duration-300 font-medium hover:scale-105 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              💾 Save Changes
+              {loading ? '💾 Saving...' : '💾 Save Changes'}
             </button>
           </div>
         </form>

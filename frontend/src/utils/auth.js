@@ -2,33 +2,47 @@
 
 // Store authentication token
 export const setAuthToken = (token) => {
-	localStorage.setItem("authToken", token);
+	if (typeof window !== "undefined") {
+		localStorage.setItem("authToken", token);
+	}
 };
 
 // Get authentication token
 export const getAuthToken = () => {
-	return localStorage.getItem("authToken");
+	if (typeof window !== "undefined") {
+		return localStorage.getItem("authToken");
+	}
+	return null;
 };
 
 // Remove authentication token
 export const removeAuthToken = () => {
-	localStorage.removeItem("authToken");
+	if (typeof window !== "undefined") {
+		localStorage.removeItem("authToken");
+	}
 };
 
 // Store user data
 export const setUserData = (user) => {
-	localStorage.setItem("userData", JSON.stringify(user));
+	if (typeof window !== "undefined") {
+		localStorage.setItem("userData", JSON.stringify(user));
+	}
 };
 
 // Get user data
 export const getUserData = () => {
-	const data = localStorage.getItem("userData");
-	return data ? JSON.parse(data) : null;
+	if (typeof window !== "undefined") {
+		const data = localStorage.getItem("userData");
+		return data ? JSON.parse(data) : null;
+	}
+	return null;
 };
 
 // Remove user data
 export const removeUserData = () => {
-	localStorage.removeItem("userData");
+	if (typeof window !== "undefined") {
+		localStorage.removeItem("userData");
+	}
 };
 
 // Check if user is authenticated

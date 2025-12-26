@@ -82,6 +82,37 @@ class StudentService {
 		return profile;
 	}
 
+	// Update student profile
+	async updateProfile(userId, updates) {
+		const student = await studentRepo.getStudentByUserId(userId);
+		if (!student) {
+			throw new Error("Student profile not found");
+		}
+
+		// Update user data (name, phone, address, dateOfBirth)
+		const updatedUser = await authRepo.updateUserProfile(userId, updates);
+
+		// Return updated profile
+		const profile = {
+			studentId: student._id,
+			name: updatedUser.name,
+			email: updatedUser.email,
+			phone: updatedUser.phone,
+			profilePicture: updatedUser.profilePicture || "",
+			address: updatedUser.address || "",
+			dateOfBirth: updatedUser.dateOfBirth || null,
+			gender: updatedUser.gender || "",
+			role: updatedUser.role,
+			createdAt: updatedUser.createdAt,
+			status: student.status,
+			theoPassed: student.theoPassed,
+			practicalProgress: student.practicalProgress,
+			practicalSessionsCompleted: student.practicalSessionsCompleted,
+		};
+
+		return profile;
+	}
+
 	// Enroll in a course (license)
 	async enrollInCourse(userId, licenseId) {
 		const student = await studentRepo.getStudentByUserId(userId);

@@ -1,9 +1,41 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { getUserData } from '@/utils/auth';
+import { getStudentProfile } from '@/services/api/student/profile';
+import { logout as apiLogout } from '@/services/api/auth/logout';
 
 export default function StudentHeader() {
   const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = getUserData();
+        if (!userData) {
+          router.push('/login');
+          return;
+        }
+
+        const profile = await getStudentProfile();
+        setUser(profile);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [router]);
+
+  const handleLogout = () => {
+    apiLogout();
+    router.push('/login');
+  };
 
   return (
     <header className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 text-white p-3 border-b border-purple-800/50 sticky top-0 z-50 shadow-xl">
@@ -27,13 +59,28 @@ export default function StudentHeader() {
             onClick={() => router.push('/profile')}
             className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg shadow-lg hover:bg-white/15 transition-all duration-200 border border-white/20"
           >
-            <div className="w-7 h-7 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/50">
-              <span className="text-sm">👤</span>
-            </div>
-            <span className="font-medium text-white text-sm">Student Name</span>
+            {user?.profilePicture ? (
+              <img 
+                src={user.profilePicture} 
+                alt={user.name}
+                className="w-7 h-7 rounded-full object-cover border-2 border-white/50"
+              />
+            ) : (
+              <div className="w-7 h-7 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/50">
+                <span className="text-sm">👤</span>
+              </div>
+            )}
+            <span className="font-medium text-white text-sm">
+              {loading ? 'Loading...' : user?.name || 'Student'}
+            </span>
           </button>
           
-          <button className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-colors duration-200 shadow-lg text-sm">Logout</button>
+          <button 
+            onClick={handleLogout}
+            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded-lg transition-colors duration-200 shadow-lg text-sm"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </header>

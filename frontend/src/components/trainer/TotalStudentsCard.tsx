@@ -1,6 +1,8 @@
-export default function TotalStudentsCard() {
-  const count = 0; // Will be fetched from backend
+interface TotalStudentsCardProps {
+  count?: number;
+}
 
+export default function TotalStudentsCard({ count = 0 }: TotalStudentsCardProps) {
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 shadow-card hover-lift">
       <div className="flex items-center justify-between mb-3">

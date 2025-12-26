@@ -1,71 +1,96 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getStudentSessions } from '@/services/api/student/sessions';
+
 export default function Sessions() {
+  const [sessions, setSessions] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const data = await getStudentSessions();
+        setSessions(data);
+      } catch (error) {
+        console.error('Failed to fetch sessions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSessions();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  const upcomingSessions = sessions?.sessions?.filter((s: any) => s.status === 'confirmed' || s.status === 'scheduled') || [];
+  const completedSessions = sessions?.sessions?.filter((s: any) => s.status === 'completed') || [];
+
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Book Sessions</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">My Sessions</h1>
       
-      <div className="grid grid-cols-3 gap-6">
-        {/* Available Slots */}
-        <div className="col-span-2 bg-gray-800 p-6 rounded border border-gray-700">
-          <h2 className="text-lg font-bold text-white mb-4">Available Slots</h2>
-          <table className="w-full">
-            <thead className="bg-gray-700">
-              <tr>
-                <th className="p-3 text-left text-white">Date</th>
-                <th className="p-3 text-left text-white">Time</th>
-                <th className="p-3 text-left text-white">Trainer</th>
-                <th className="p-3 text-left text-white">Vehicle</th>
-                <th className="p-3 text-left text-white">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-gray-700">
-                <td className="p-3 text-gray-300">Dec 28</td>
-                <td className="p-3 text-gray-300">10:00 AM</td>
-                <td className="p-3 text-gray-300">John Doe</td>
-                <td className="p-3 text-gray-300">ABC123</td>
-                <td className="p-3"><button className="bg-blue-600 text-white px-3 py-1 rounded">Book</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        
-        {/* Booking Form */}
-        <div className="bg-gray-800 p-6 rounded border border-gray-700">
-          <h2 className="text-lg font-bold text-white mb-4">Quick Book</h2>
-          <div className="space-y-3">
-            <div>
-              <label className="text-sm text-gray-400">Select Trainer</label>
-              <select className="w-full bg-gray-700 text-white p-2 rounded">
-                <option>Select...</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm text-gray-400">Select Date</label>
-              <input type="date" className="w-full bg-gray-700 text-white p-2 rounded" />
-            </div>
-            <div>
-              <label className="text-sm text-gray-400">Select Time</label>
-              <select className="w-full bg-gray-700 text-white p-2 rounded">
-                <option>Select...</option>
-              </select>
-            </div>
-            <button className="w-full bg-blue-600 text-white p-2 rounded">Book Session</button>
+      {/* Upcoming Sessions */}
+      <div className="bg-gray-800 p-6 rounded border border-gray-700 mb-6">
+        <h2 className="text-lg font-bold text-white mb-4">Upcoming Sessions</h2>
+        {upcomingSessions.length > 0 ? (
+          <div className="space-y-2">
+            {upcomingSessions.map((session: any, index: number) => (
+              <div key={index} className="bg-gray-700 p-3 rounded flex justify-between items-center">
+                <div>
+                  <div className="text-white font-medium">
+                    {new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {session.time}
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    Trainer: {session.trainerName || 'TBA'} • Vehicle: {session.vehicle || 'TBA'}
+                  </div>
+                </div>
+                <div className="text-blue-400 font-medium">
+                  {session.status ? session.status.charAt(0).toUpperCase() + session.status.slice(1) : 'Scheduled'}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className="text-gray-400 text-center py-8">
+            <div className="text-4xl mb-2">📅</div>
+            <p>No upcoming sessions</p>
+          </div>
+        )}
       </div>
-      
-      {/* My Bookings */}
-      <div className="bg-gray-800 p-6 rounded border border-gray-700 mt-6">
-        <h2 className="text-lg font-bold text-white mb-4">My Bookings</h2>
-        <div className="space-y-2">
-          <div className="bg-gray-700 p-3 rounded flex justify-between">
-            <div>
-              <div className="text-white">Dec 28, 10:00 AM - Trainer John</div>
-              <div className="text-sm text-gray-400">Vehicle: ABC123</div>
-            </div>
-            <div className="text-green-400">Confirmed</div>
+
+      {/* Completed Sessions */}
+      <div className="bg-gray-800 p-6 rounded border border-gray-700">
+        <h2 className="text-lg font-bold text-white mb-4">Completed Sessions</h2>
+        {completedSessions.length > 0 ? (
+          <div className="space-y-2">
+            {completedSessions.map((session: any, index: number) => (
+              <div key={index} className="bg-gray-700 p-3 rounded flex justify-between items-center">
+                <div>
+                  <div className="text-white font-medium">
+                    {new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} at {session.time}
+                  </div>
+                  <div className="text-sm text-gray-400">
+                    Trainer: {session.trainerName || 'N/A'} • Duration: {session.duration || '1'} hour
+                  </div>
+                </div>
+                <div className="text-green-400 font-medium">✓ Completed</div>
+              </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className="text-gray-400 text-center py-8">
+            <div className="text-4xl mb-2">✅</div>
+            <p>No completed sessions yet</p>
+          </div>
+        )}
       </div>
     </div>
   );

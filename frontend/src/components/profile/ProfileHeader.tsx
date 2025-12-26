@@ -3,19 +3,32 @@
 import ProfilePictureUpload from './ProfilePictureUpload';
 
 interface ProfileHeaderProps {
+  user: any;
   onEdit: () => void;
+  onProfileUpdate?: (updatedUser: any) => void;
 }
 
-export default function ProfileHeader({ onEdit }: ProfileHeaderProps) {
-  // TODO: Get from API
-  const user = {
-    name: 'John Doe',
-    role: 'Student',
-    email: 'john@example.com',
-    status: 'Active',
-    profileCompletion: 85,
-    memberSince: 'Dec 2025',
+export default function ProfileHeader({ user, onEdit, onProfileUpdate }: ProfileHeaderProps) {
+  if (!user) return null;
+
+  const handlePictureUpdate = (imageUrl: string) => {
+    if (onProfileUpdate) {
+      onProfileUpdate({ ...user, profilePicture: imageUrl });
+    }
   };
+
+  // Calculate profile completion
+  const calculateCompletion = () => {
+    let completed = 0;
+    const fields = ['name', 'email', 'phone', 'address', 'dateOfBirth', 'gender', 'profilePicture'];
+    fields.forEach(field => {
+      if (user[field]) completed++;
+    });
+    return Math.round((completed / fields.length) * 100);
+  };
+
+  const profileCompletion = calculateCompletion();
+  const memberSince = new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
   return (
     <div className="relative bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 rounded-xl p-8 border border-gray-700 overflow-hidden">
@@ -28,7 +41,7 @@ export default function ProfileHeader({ onEdit }: ProfileHeaderProps) {
           <div className="flex items-start gap-6">
             {/* Profile Picture */}
             <div className="relative">
-              <ProfilePictureUpload />
+              <ProfilePictureUpload currentImage={user.profilePicture} onUpdate={handlePictureUpdate} />
               <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-gray-800"></div>
             </div>
             
@@ -40,14 +53,14 @@ export default function ProfileHeader({ onEdit }: ProfileHeaderProps) {
               </div>
               <div className="flex items-center gap-3 mb-2">
                 <span className="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-sm rounded-full shadow-lg shadow-blue-600/30 font-medium">
-                  {user.role}
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                 </span>
                 <span className="px-4 py-1.5 bg-gradient-to-r from-green-600 to-green-500 text-white text-sm rounded-full shadow-lg shadow-green-600/30 font-medium flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                  {user.status}
+                  Active
                 </span>
                 <span className="px-3 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-full">
-                  📅 {user.memberSince}
+                  📅 {memberSince}
                 </span>
               </div>
               <p className="text-gray-400">{user.email}</p>
@@ -67,12 +80,12 @@ export default function ProfileHeader({ onEdit }: ProfileHeaderProps) {
         <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-300 font-medium">Profile Completion</span>
-            <span className="text-sm font-bold text-blue-400">{user.profileCompletion}%</span>
+            <span className="text-sm font-bold text-blue-400">{profileCompletion}%</span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
             <div 
               className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 h-2 rounded-full transition-all duration-500"
-              style={{ width: `${user.profileCompletion}%` }}
+              style={{ width: `${profileCompletion}%` }}
             ></div>
           </div>
         </div>

@@ -1,10 +1,9 @@
-export default function ContactInformation() {
-  // TODO: Get from API
-  const contact = {
-    phone: '+1 123 456 7890',
-    address: '525 E 68th Street, New York, NY 10065',
-    email: 'john@example.com',
-  };
+interface ContactInformationProps {
+  user: any;
+}
+
+export default function ContactInformation({ user }: ContactInformationProps) {
+  if (!user) return null;
 
   return (
     <div className="bg-gradient-to-br from-gray-800 to-gray-800/50 rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-all duration-300 hover:shadow-lg">
@@ -18,7 +17,7 @@ export default function ContactInformation() {
           <span className="text-xl mt-0.5 group-hover:scale-110 transition-transform">📱</span>
           <div className="flex-1">
             <p className="text-gray-400 text-sm mb-1">Phone</p>
-            <p className="text-white font-medium">{contact.phone}</p>
+            <p className="text-white font-medium">{user.phone}</p>
           </div>
         </div>
         
@@ -26,7 +25,7 @@ export default function ContactInformation() {
           <span className="text-xl mt-0.5 group-hover:scale-110 transition-transform">📍</span>
           <div className="flex-1">
             <p className="text-gray-400 text-sm mb-1">Address</p>
-            <p className="text-white font-medium">{contact.address}</p>
+            <p className="text-white font-medium">{user.address || 'Not provided'}</p>
           </div>
         </div>
         
@@ -34,7 +33,7 @@ export default function ContactInformation() {
           <span className="text-xl mt-0.5 group-hover:scale-110 transition-transform">✉️</span>
           <div className="flex-1">
             <p className="text-gray-400 text-sm mb-1">Email</p>
-            <p className="text-white font-medium">{contact.email}</p>
+            <p className="text-white font-medium">{user.email}</p>
           </div>
         </div>
       </div>
