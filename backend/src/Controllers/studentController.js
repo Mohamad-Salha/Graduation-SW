@@ -23,6 +23,18 @@ class StudentController {
 		}
 	}
 
+	// PUT /api/student/profile - Update student profile
+	async updateProfile(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const updates = req.body;
+			const result = await studentService.updateProfile(userId, updates);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
 	// POST /api/student/enroll - Enroll in a course
 	async enrollInCourse(req, res) {
 		try {

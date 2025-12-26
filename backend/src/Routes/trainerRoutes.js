@@ -11,6 +11,9 @@ router.use(requireRole("trainer"));
 // GET /api/trainer/profile - Get trainer profile
 router.get("/profile", (req, res) => trainerController.getProfile(req, res));
 
+// PUT /api/trainer/profile - Update trainer profile
+router.put("/profile", (req, res) => trainerController.updateProfile(req, res));
+
 // GET /api/trainer/students - Get assigned students
 router.get("/students", (req, res) =>
 	trainerController.getAssignedStudents(req, res)

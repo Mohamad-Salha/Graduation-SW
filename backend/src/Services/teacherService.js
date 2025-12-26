@@ -16,7 +16,36 @@ class TeacherService {
 			name: user.name,
 			email: user.email,
 			phone: user.phone,
+			profilePicture: user.profilePicture || "",
+			address: user.address || "",
+			dateOfBirth: user.dateOfBirth || null,
+			gender: user.gender || "",
+			role: user.role,
+			createdAt: user.createdAt,
 			assignedStudentsCount: teacher.assignedStudents.length,
+		};
+	}
+
+	// Update teacher profile
+	async updateProfile(userId, updates) {
+		const user = await authRepo.findUserById(userId);
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		const updatedUser = await authRepo.updateUserProfile(userId, updates);
+
+		return {
+			message: "Profile updated successfully",
+			user: {
+				name: updatedUser.name,
+				email: updatedUser.email,
+				phone: updatedUser.phone,
+				address: updatedUser.address,
+				dateOfBirth: updatedUser.dateOfBirth,
+				gender: updatedUser.gender,
+				profilePicture: updatedUser.profilePicture,
+			},
 		};
 	}
 

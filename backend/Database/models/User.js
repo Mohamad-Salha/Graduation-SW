@@ -24,6 +24,10 @@ const UserSchema = new Schema({
 		enum: ["student", "teacher", "trainer", "admin"],
 		required: true,
 	},
+	profilePicture: { type: String, default: "" }, // Cloudinary URL
+	address: { type: String },
+	dateOfBirth: { type: Date },
+	gender: { type: String, enum: ["male", "female"] },
 	createdAt: { type: Date, default: Date.now },
 });
 

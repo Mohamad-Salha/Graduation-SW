@@ -11,7 +11,17 @@ class TrainerController {
 			return res.status(400).json({ error: error.message });
 		}
 	}
-
+	// PUT /api/trainer/profile - Update trainer profile
+	async updateProfile(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const updates = req.body;
+			const result = await trainerService.updateProfile(userId, updates);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
 	// GET /api/trainer/students
 	async getAssignedStudents(req, res) {
 		try {

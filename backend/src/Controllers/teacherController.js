@@ -12,6 +12,18 @@ class TeacherController {
 		}
 	}
 
+	// PUT /api/teacher/profile - Update teacher profile
+	async updateProfile(req, res) {
+		try {
+			const userId = req.user.id; // From JWT token
+			const updates = req.body;
+			const result = await teacherService.updateProfile(userId, updates);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
 	// GET /api/teacher/students - Get assigned students
 	async getAssignedStudents(req, res) {
 		try {

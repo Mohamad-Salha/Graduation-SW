@@ -16,6 +16,9 @@ router.get("/licenses", (req, res) =>
 // GET /api/student/profile - Get student profile
 router.get("/profile", (req, res) => studentController.getProfile(req, res));
 
+// PUT /api/student/profile - Update student profile
+router.put("/profile", (req, res) => studentController.updateProfile(req, res));
+
 // POST /api/student/enroll - Enroll in a course
 router.post("/enroll", (req, res) =>
 	studentController.enrollInCourse(req, res)

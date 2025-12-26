@@ -4,6 +4,8 @@ const studentRoutes = require("./Routes/studentRoutes");
 const teacherRoutes = require("./Routes/teacherRoutes");
 const trainerRoutes = require("./Routes/trainerRoutes");
 const paymentRoutes = require("./Routes/paymentRoutes");
+const uploadRoutes = require("./Routes/uploadRoutes");
+const { verifyToken } = require("./Middleware/authMiddleware");
 
 function initRoutes(app) {
 	// Authentication routes
@@ -23,6 +25,9 @@ function initRoutes(app) {
 
 	// Payment routes
 	app.use("/api/student/payment", paymentRoutes);
+
+	// Upload routes (requires authentication)
+	app.use("/api/upload", verifyToken, uploadRoutes);
 
 	// Health check
 	app.get("/", (req, res) => {

@@ -11,6 +11,9 @@ router.use(requireRole("teacher"));
 // GET /api/teacher/profile - Get teacher profile
 router.get("/profile", (req, res) => teacherController.getProfile(req, res));
 
+// PUT /api/teacher/profile - Update teacher profile
+router.put("/profile", (req, res) => teacherController.updateProfile(req, res));
+
 // GET /api/teacher/students - Get assigned students
 router.get("/students", (req, res) =>
 	teacherController.getAssignedStudents(req, res)

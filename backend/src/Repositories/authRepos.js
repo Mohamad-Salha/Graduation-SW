@@ -39,6 +39,40 @@ class AuthRepository {
 	async findStudentByUserId(userId) {
 		return await Student.findOne({ userId });
 	}
+
+	// Update user profile fields
+	async updateUserProfile(userId, updates) {
+		const allowedUpdates = [
+			"name",
+			"phone",
+			"address",
+			"dateOfBirth",
+			"gender",
+		];
+		const filteredUpdates = {};
+
+		// Only update allowed fields
+		for (const key of allowedUpdates) {
+			if (updates[key] !== undefined) {
+				filteredUpdates[key] = updates[key];
+			}
+		}
+
+		return await User.findByIdAndUpdate(
+			userId,
+			{ $set: filteredUpdates },
+			{ new: true, runValidators: true }
+		);
+	}
+
+	// Update user profile picture
+	async updateUserProfilePicture(userId, imageUrl) {
+		return await User.findByIdAndUpdate(
+			userId,
+			{ $set: { profilePicture: imageUrl } },
+			{ new: true }
+		);
+	}
 }
 
 module.exports = new AuthRepository();
