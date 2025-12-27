@@ -7,7 +7,7 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: 'Next.js with Tailwind CSS',
+  title: 'Driving Pro',
   description: 'A boilerplate project with Next.js and Tailwind CSS',
   icons: {
     icon: [
