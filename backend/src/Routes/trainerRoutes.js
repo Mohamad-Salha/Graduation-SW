@@ -44,10 +44,21 @@ router.post("/schedules", (req, res) =>
 	trainerController.createSchedule(req, res)
 );
 
+// POST /api/trainer/schedule/create-weekly - Create weekly schedule with time slots
+router.post("/schedule/create-weekly", (req, res) =>
+	trainerController.createWeeklySchedule(req, res)
+);
+
 // GET /api/trainer/schedules - Get trainer's schedules
 router.get("/schedules", (req, res) =>
 	trainerController.getSchedules(req, res)
 );
+
+// GET /api/trainer/schedule - Get trainer's schedule (unified)
+router.get("/schedule", (req, res) => trainerController.getSchedule(req, res));
+
+// GET /api/trainer/vehicles - Get assigned vehicles
+router.get("/vehicles", (req, res) => trainerController.getVehicles(req, res));
 
 // PUT /api/trainer/schedules/:scheduleId/slots/:slotId/attendance - Mark slot attendance
 router.put("/schedules/:scheduleId/slots/:slotId/attendance", (req, res) =>

@@ -141,6 +141,151 @@ class TrainerService {
 		};
 	}
 
+	// Get trainer schedule (unified method for frontend)
+	async getSchedule(userId) {
+		const trainer = await trainerRepo.getTrainerByUserId(userId);
+		if (!trainer) {
+			throw new Error("Trainer profile not found");
+		}
+
+		const schedules = await trainerRepo.getTrainerSchedules(trainer._id);
+
+		// Return schedules with week information for the visual grid
+		return {
+			schedules: schedules.map((schedule) => ({
+				scheduleId: schedule._id,
+				weekStartDate: schedule.weekStartDate,
+				weekEndDate: schedule.weekEndDate,
+				vehicleId: schedule.vehicleId?._id,
+				vehicle: schedule.vehicleId
+					? {
+							id: schedule.vehicleId._id,
+							model: schedule.vehicleId.model,
+							licensePlate: schedule.vehicleId.licensePlate,
+					  }
+					: null,
+				slots: schedule.weeklySlots.map((slot) => ({
+					slotId: slot._id,
+					day: slot.day,
+					startTime: slot.startTime,
+					endTime: slot.endTime,
+					isBooked: slot.isBooked,
+					bookedBy: slot.bookedBy
+						? {
+								id: slot.bookedBy._id,
+								name: slot.bookedBy.userId?.name || "Unknown",
+						  }
+						: null,
+					sessionDate: slot.sessionDate,
+					attended: slot.attended,
+				})),
+			})),
+		};
+	}
+
+	// Create weekly schedule with time slots (new visual grid format)
+	async createWeeklySchedule(
+		userId,
+		{ slots, weekStartDate, weekEndDate, vehicleId }
+	) {
+		const trainer = await trainerRepo.getTrainerByUserId(userId);
+		if (!trainer) {
+			throw new Error("Trainer profile not found");
+		}
+
+		// Validate vehicle exists
+		const vehicle = await trainerRepo.getVehicleById(vehicleId);
+		if (!vehicle) {
+			throw new Error("Vehicle not found");
+		}
+
+		// Parse dates
+		const startDate = new Date(weekStartDate);
+		const endDate = new Date(weekEndDate);
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		// Check if week has already started (only block if PAST the start date)
+		if (today > startDate) {
+			throw new Error(
+				"Cannot create or modify schedule for a week that has already started"
+			);
+		}
+
+		// Check if schedule already exists for this week
+		const existingSchedule = await trainerRepo.getScheduleByWeekRange(
+			trainer._id,
+			startDate,
+			endDate
+		);
+
+		if (existingSchedule) {
+			// Check if any slots are booked
+			const bookedSlots = existingSchedule.weeklySlots.filter(
+				(slot) => slot.isBooked
+			);
+			if (bookedSlots.length > 0) {
+				throw new Error(
+					`Cannot modify schedule - ${bookedSlots.length} slot(s) already booked by students`
+				);
+			}
+
+			// Update existing schedule (merge slots)
+			existingSchedule.weeklySlots = [
+				...existingSchedule.weeklySlots.filter((slot) => slot.isBooked),
+				...slots.map((slot) => ({
+					day: slot.day,
+					startTime: slot.startTime,
+					endTime: slot.endTime,
+					vehicleId: vehicle._id,
+					isBooked: false,
+					attended: false,
+					paymentAmount: 0,
+				})),
+			];
+
+			const updated = await trainerRepo.updateSchedule(
+				existingSchedule._id,
+				{ weeklySlots: existingSchedule.weeklySlots }
+			);
+
+			return {
+				message: `Schedule updated successfully for week ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`,
+				scheduleId: updated._id,
+				slotsCount: slots.length,
+				weekStartDate: startDate,
+				weekEndDate: endDate,
+			};
+		}
+
+		// Create new schedule
+		const schedule = await trainerRepo.createSchedule({
+			trainerId: trainer._id,
+			vehicleId: vehicle._id,
+			repeatForWeeks: 1,
+			weekStartDate: startDate,
+			weekEndDate: endDate,
+			isActive: true,
+			weeklySlots: slots.map((slot) => ({
+				day: slot.day,
+				startTime: slot.startTime,
+				endTime: slot.endTime,
+				vehicleId: vehicle._id,
+				isBooked: false,
+				attended: false,
+				paymentAmount: 0,
+			})),
+		});
+
+		return {
+			message: `Schedule created successfully for week ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`,
+			scheduleId: schedule._id,
+			slotsCount: slots.length,
+			weekStartDate: startDate,
+			weekEndDate: endDate,
+		};
+	}
+
 	// Mark slot attendance
 	async markSlotAttendance(
 		userId,
@@ -386,6 +531,27 @@ class TrainerService {
 			message: "Student marked as ready for practical exam",
 			studentId: updatedStudent._id,
 			studentName: student.userId.name,
+		};
+	}
+
+	// Get assigned vehicles
+	async getVehicles(userId) {
+		const trainer = await trainerRepo.getTrainerByUserId(userId);
+		if (!trainer) {
+			throw new Error("Trainer profile not found");
+		}
+
+		// Get all vehicles assigned to this trainer
+		const vehicles = await trainerRepo.getVehiclesByTrainerId(trainer._id);
+
+		return {
+			vehicles: vehicles.map((v) => ({
+				id: v._id,
+				model: v.model,
+				licensePlate: v.licensePlate,
+				type: v.type,
+				isAvailable: v.isAvailable,
+			})),
 		};
 	}
 }

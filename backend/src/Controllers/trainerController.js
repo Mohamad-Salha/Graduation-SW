@@ -159,6 +159,53 @@ class TrainerController {
 		}
 	}
 
+	// GET /api/trainer/schedule - Get trainer schedule (unified)
+	async getSchedule(req, res) {
+		try {
+			const userId = req.user.id;
+			const result = await trainerService.getSchedule(userId);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// POST /api/trainer/schedule/create-weekly - Create weekly schedule with time slots
+	async createWeeklySchedule(req, res) {
+		try {
+			const userId = req.user.id;
+			const { slots, weekStartDate, weekEndDate, vehicleId } = req.body;
+
+			if (!slots || !Array.isArray(slots) || slots.length === 0) {
+				return res.status(400).json({
+					error: "Slots array is required and must not be empty",
+				});
+			}
+
+			if (!weekStartDate || !weekEndDate) {
+				return res.status(400).json({
+					error: "Week start date and end date are required",
+				});
+			}
+
+			if (!vehicleId) {
+				return res.status(400).json({
+					error: "Vehicle ID is required",
+				});
+			}
+
+			const result = await trainerService.createWeeklySchedule(userId, {
+				slots,
+				weekStartDate,
+				weekEndDate,
+				vehicleId,
+			});
+			return res.status(201).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
 	// PUT /api/trainer/schedules/:scheduleId/slots/:slotId/attendance
 	async markSlotAttendance(req, res) {
 		try {
@@ -179,6 +226,17 @@ class TrainerController {
 				attended,
 				paymentAmount || 0
 			);
+			return res.status(200).json(result);
+		} catch (error) {
+			return res.status(400).json({ error: error.message });
+		}
+	}
+
+	// GET /api/trainer/vehicles
+	async getVehicles(req, res) {
+		try {
+			const userId = req.user.id;
+			const result = await trainerService.getVehicles(userId);
 			return res.status(200).json(result);
 		} catch (error) {
 			return res.status(400).json({ error: error.message });

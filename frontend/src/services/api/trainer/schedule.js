@@ -23,3 +23,20 @@ export const getTodaySchedule = async () => {
 export const getWeeklySchedule = async () => {
 	return apiClient.get("/trainer/schedule/weekly");
 };
+
+/**
+ * Create weekly schedule with time slots
+ * @param {Object} scheduleData - { slots: [{day, startTime, endTime}], repeatWeeks, vehicleId }
+ * @returns {Promise<Object>}
+ */
+export const createWeeklySchedule = async (scheduleData) => {
+	return apiClient.post("/trainer/schedule/create-weekly", scheduleData);
+};
+
+/**
+ * Get trainer's assigned vehicles
+ * @returns {Promise<Object>}
+ */
+export const getTrainerVehicles = async () => {
+	return apiClient.get("/trainer/vehicles");
+};

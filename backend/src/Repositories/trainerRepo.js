@@ -2,6 +2,7 @@ const Trainer = require("../../Database/models/Trainer");
 const Student = require("../../Database/models/Student");
 const StudentSession = require("../../Database/models/StudentSession");
 const PracticalSchedule = require("../../Database/models/PracticalSchedule");
+const Vehicle = require("../../Database/models/Vehicle");
 const User = require("../../Database/models/User");
 
 class TrainerRepository {
@@ -235,6 +236,59 @@ class TrainerRepository {
 			updateData,
 			{ new: true }
 		);
+	}
+
+	// Get vehicle by ID
+	async getVehicleById(vehicleId) {
+		return await Vehicle.findById(vehicleId);
+	}
+
+	// Create schedule (for new time slot grid system)
+	async createSchedule(scheduleData) {
+		const schedule = new PracticalSchedule(scheduleData);
+		return await schedule.save();
+	}
+
+	// Get schedule by ID
+	async getScheduleById(scheduleId) {
+		return await PracticalSchedule.findById(scheduleId)
+			.populate("trainerId")
+			.populate("vehicleId")
+			.populate("weeklySlots.bookedBy");
+	}
+
+	// Get trainer's schedules
+	async getTrainerSchedules(trainerId) {
+		return await PracticalSchedule.find({
+			trainerId,
+			isActive: true,
+		})
+			.populate("vehicleId", "model licensePlate")
+			.populate("weeklySlots.bookedBy")
+			.sort({ createdAt: -1 });
+	}
+
+	// Get schedule by week range
+	async getScheduleByWeekRange(trainerId, weekStartDate, weekEndDate) {
+		return await PracticalSchedule.findOne({
+			trainerId,
+			weekStartDate,
+			weekEndDate,
+			isActive: true,
+		})
+			.populate("vehicleId")
+			.populate("weeklySlots.bookedBy");
+	}
+
+	// Get vehicles assigned to trainer or unassigned vehicles
+	async getVehiclesByTrainerId(trainerId) {
+		return await Vehicle.find({
+			$or: [
+				{ assignedTrainerId: trainerId },
+				{ assignedTrainerId: null },
+				{ assignedTrainerId: { $exists: false } },
+			],
+		});
 	}
 }
 

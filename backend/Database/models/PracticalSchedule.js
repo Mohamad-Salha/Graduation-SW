@@ -31,8 +31,11 @@ const TimeSlotSchema = new Schema({
 
 const PracticalScheduleSchema = new Schema({
 	trainerId: { type: Schema.Types.ObjectId, ref: "Trainer", required: true },
+	vehicleId: { type: Schema.Types.ObjectId, ref: "Vehicle" },
 	weeklySlots: [TimeSlotSchema],
 	repeatForWeeks: { type: Number, default: 1 }, // How many weeks this schedule repeats
+	weekStartDate: { type: Date }, // Week start date (e.g., Dec 16, 2025)
+	weekEndDate: { type: Date }, // Week end date (e.g., Dec 22, 2025)
 	isActive: { type: Boolean, default: true },
 	createdAt: { type: Date, default: Date.now },
 });

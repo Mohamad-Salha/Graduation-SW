@@ -10,7 +10,7 @@ class UploadController {
 	 */
 	async uploadProfilePicture(req, res) {
 		try {
-			const userId = req.user.userId; // From auth middleware
+			const userId = req.user.id; // From auth middleware
 			const file = req.file;
 
 			// Validate file
@@ -30,7 +30,7 @@ class UploadController {
 
 			res.status(200).json({
 				message: "Profile picture uploaded successfully",
-				profilePictureUrl: imageUrl,
+				imageUrl: imageUrl,
 			});
 		} catch (error) {
 			// Clean up file if exists

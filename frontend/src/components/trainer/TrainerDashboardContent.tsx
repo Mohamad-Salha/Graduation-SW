@@ -3,7 +3,11 @@ import TodaysSessions from './TodaysSessions';
 import WeeklySchedule from './WeeklySchedule';
 import RecentStudents from './RecentStudents';
 
-export default function TrainerDashboardLayout() {
+/**
+ * Trainer Dashboard Content Component
+ * Contains the actual dashboard widgets and sections for trainers
+ */
+export default function TrainerDashboardContent() {
   return (
     <div>
       <div className="flex items-center gap-3 mb-6">
