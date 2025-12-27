@@ -4,6 +4,13 @@ import { useState } from 'react';
 import DashboardLayout from '@/components/common/DashboardLayout';
 import DashboardHeader from '@/components/common/DashboardHeader';
 import DashboardSidebar from '@/components/common/DashboardSidebar';
+import AdminDashboardContent from '@/components/admin/AdminDashboardContent';
+import AdminStudentsManagement from '@/components/admin/AdminStudentsManagement';
+import AdminStaffManagement from '@/components/admin/AdminStaffManagement';
+import AdminVehiclesLicenses from '@/components/admin/AdminVehiclesLicenses';
+import AdminPaymentsManagement from '@/components/admin/AdminPaymentsManagement';
+import AdminExamsManagement from '@/components/admin/AdminExamsManagement';
+import AdminReportsManagement from '@/components/admin/AdminReportsManagement';
 
 export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -12,14 +19,33 @@ export default function AdminDashboard() {
   const adminMenuItems = [
     { id: 'dashboard', icon: '📊', label: 'Dashboard' },
     { id: 'students', icon: '👥', label: 'Students' },
-    { id: 'teachers', icon: '👨‍🏫', label: 'Teachers' },
-    { id: 'trainers', icon: '🚗', label: 'Trainers' },
-    { id: 'vehicles', icon: '🚙', label: 'Vehicles' },
-    { id: 'licenses', icon: '📄', label: 'Licenses' },
+    { id: 'staff', icon: '👨‍🏫', label: 'Staff' },
+    { id: 'vehicles', icon: '�', label: 'Vehicles & Licenses' },
     { id: 'exams', icon: '📝', label: 'Exams' },
     { id: 'payments', icon: '💰', label: 'Payments' },
     { id: 'reports', icon: '📈', label: 'Reports' },
   ];
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return <AdminDashboardContent onNavigate={setActiveSection} />;
+      case 'students':
+        return <AdminStudentsManagement />;
+      case 'staff':
+        return <AdminStaffManagement />;
+      case 'vehicles':
+        return <AdminVehiclesLicenses />;
+      case 'payments':
+        return <AdminPaymentsManagement />;
+      case 'exams':
+        return <AdminExamsManagement />;
+      case 'reports':
+        return <AdminReportsManagement />;
+      default:
+        return <AdminDashboardContent onNavigate={setActiveSection} />;
+    }
+  };
 
   return (
     <DashboardLayout
@@ -38,11 +64,7 @@ export default function AdminDashboard() {
         />
       }
     >
-      {/* TODO: Add Admin Dashboard Content */}
-      <div className="text-center py-20">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">Admin Dashboard</h1>
-        <p className="text-gray-600">Content coming soon - using shared layout! ✨</p>
-      </div>
+      {renderContent()}
     </DashboardLayout>
   );
 }

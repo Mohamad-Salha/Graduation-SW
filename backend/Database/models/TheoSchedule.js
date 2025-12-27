@@ -46,6 +46,8 @@ const TheoScheduleSchema = new Schema({
 	location: { type: String, required: true },
 	isActive: { type: Boolean, default: true }, // Can disable schedule if needed
 	assignedStudents: [{ type: Schema.Types.ObjectId, ref: "Student" }],
+	minLecturesRequired: { type: Number, default: 12 }, // Minimum lectures to attend
+	lectureCount: { type: Number, default: 0 }, // Total lectures created
 });
 
 module.exports = mongoose.model("TheoSchedule", TheoScheduleSchema);

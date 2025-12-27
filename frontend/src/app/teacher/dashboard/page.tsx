@@ -4,6 +4,11 @@ import { useState } from 'react';
 import DashboardLayout from '@/components/common/DashboardLayout';
 import DashboardHeader from '@/components/common/DashboardHeader';
 import DashboardSidebar from '@/components/common/DashboardSidebar';
+import TeacherDashboardContent from '@/components/teacher/TeacherDashboardContent';
+import TeacherMyStudents from '@/components/teacher/TeacherMyStudents';
+import TeacherAttendance from '@/components/teacher/TeacherAttendance';
+import TeacherSchedule from '@/components/teacher/TeacherSchedule';
+import TeacherMarkReady from '@/components/teacher/TeacherMarkReady';
 
 export default function TeacherDashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -16,6 +21,23 @@ export default function TeacherDashboard() {
     { id: 'schedule', icon: '📅', label: 'Schedule' },
     { id: 'mark-ready', icon: '✓', label: 'Mark Ready' },
   ];
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return <TeacherDashboardContent />;
+      case 'students':
+        return <TeacherMyStudents />;
+      case 'attendance':
+        return <TeacherAttendance />;
+      case 'schedule':
+        return <TeacherSchedule />;
+      case 'mark-ready':
+        return <TeacherMarkReady />;
+      default:
+        return <TeacherDashboardContent />;
+    }
+  };
 
   return (
     <DashboardLayout
@@ -34,11 +56,7 @@ export default function TeacherDashboard() {
         />
       }
     >
-      {/* TODO: Add Teacher Dashboard Content */}
-      <div className="text-center py-20">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">Teacher Dashboard</h1>
-        <p className="text-gray-600">Content coming soon - using shared layout! ✨</p>
-      </div>
+      {renderContent()}
     </DashboardLayout>
   );
 }

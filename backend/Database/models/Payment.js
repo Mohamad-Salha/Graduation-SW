@@ -26,7 +26,7 @@ const PaymentSchema = new Schema({
 	amount: { type: Number, required: true },
 	paymentMethod: {
 		type: String,
-		enum: ["credit_card", "debit_card", "cash"],
+		enum: ["credit_card", "debit_card", "cash", "bank_transfer"],
 		default: "credit_card",
 	},
 	cardDetails: {
@@ -44,6 +44,22 @@ const PaymentSchema = new Schema({
 	description: { type: String },
 	failureReason: { type: String },
 	metadata: { type: Object }, // Additional payment info
+	// Invoice details
+	invoiceNumber: { type: String, unique: true, sparse: true },
+	invoiceDate: { type: Date },
+	dueDate: { type: Date },
+	paymentType: {
+		type: String,
+		enum: ["registration", "license_fee", "practical_session", "exam_fee", "other"],
+		default: "other"
+	},
+	paidBy: { type: String }, // Name of person who paid
+	receiptUrl: { type: String }, // URL to receipt/invoice PDF
+	notes: { type: String },
+	// Admin tracking
+	recordedBy: { type: Schema.Types.ObjectId, ref: "User" }, // Admin who recorded this
+	verifiedBy: { type: Schema.Types.ObjectId, ref: "User" }, // Admin who verified
+	verifiedAt: { type: Date },
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

@@ -31,6 +31,10 @@ const StudentSchema = new Schema({
 	theoPassed: { type: Boolean, default: false },
 	readyForTheoExam: { type: Boolean, default: false },
 	readyForPracticalExam: { type: Boolean, default: false },
+	// Theoretical progress tracking
+	theoLecturesAttended: { type: Number, default: 0 },
+	theoAttendanceRate: { type: Number, default: 0 }, // Percentage
+	// Practical progress tracking
 	practicalProgress: { type: Number, default: 0 },
 	practicalSessionsCompleted: { type: Number, default: 0 },
 	maxSessionsPerWeek: { type: Number, default: 3 }, // Fairness limit

@@ -400,6 +400,405 @@ class AdminService {
 			trainerId,
 		};
 	}
+
+	// === Dashboard Analytics ===
+
+	// Get dashboard statistics
+	async getDashboardStats() {
+		const stats = await adminRepo.getDashboardStats();
+		return {
+			message: "Dashboard statistics retrieved successfully",
+			stats,
+		};
+	}
+
+	// Get recent activities
+	async getRecentActivities(limit = 10) {
+		const activities = await adminRepo.getRecentActivities(limit);
+		return {
+			message: "Recent activities retrieved successfully",
+			activities,
+		};
+	}
+
+	// Get revenue analytics
+	async getRevenueAnalytics(startDate, endDate) {
+		const analytics = await adminRepo.getRevenueAnalytics(startDate, endDate);
+		return {
+			message: "Revenue analytics retrieved successfully",
+			analytics,
+		};
+	}
+
+	// === Enhanced Student Management ===
+
+	// Get student details
+	async getStudentDetails(studentId) {
+		const student = await adminRepo.getStudentById(studentId);
+		if (!student) {
+			throw new Error("Student not found");
+		}
+
+		const payments = await adminRepo.getStudentPayments(studentId);
+
+		return {
+			message: "Student details retrieved successfully",
+			student: {
+				studentId: student._id,
+				name: student.userId.name,
+				email: student.userId.email,
+				phone: student.userId.phone,
+				status: student.status,
+				chosenLicense: student.chosenLicense,
+				teacher: student.theoTeacherId
+					? {
+							id: student.theoTeacherId._id,
+							name: student.theoTeacherId.userId.name,
+					  }
+					: null,
+				trainer: student.trainerId
+					? {
+							id: student.trainerId._id,
+							name: student.trainerId.userId.name,
+					  }
+					: null,
+				progress: {
+					theoPassed: student.theoPassed,
+					readyForTheoExam: student.readyForTheoExam,
+					readyForPracticalExam: student.readyForPracticalExam,
+					practicalSessionsCompleted: student.practicalSessionsCompleted,
+					theoLecturesAttended: student.theoLecturesAttended || 0,
+					theoAttendanceRate: student.theoAttendanceRate || 0,
+				},
+				payments: payments.map((p) => ({
+					paymentId: p._id,
+					amount: p.amount,
+					status: p.status,
+					paymentType: p.paymentType,
+					date: p.createdAt,
+				})),
+				createdAt: student.userId.createdAt,
+			},
+		};
+	}
+
+	// Assign teacher to student
+	async assignTeacherToStudent(studentId, teacherId) {
+		const student = await adminRepo.findStudentById(studentId);
+		if (!student) {
+			throw new Error("Student not found");
+		}
+
+		const teacher = await adminRepo.getTeacherById(teacherId);
+		if (!teacher) {
+			throw new Error("Teacher not found");
+		}
+
+		await adminRepo.assignTeacherToStudent(studentId, teacherId);
+
+		return {
+			message: "Teacher assigned to student successfully",
+			studentId,
+			teacherId,
+		};
+	}
+
+	// Assign trainer to student
+	async assignTrainerToStudent(studentId, trainerId) {
+		const student = await adminRepo.findStudentById(studentId);
+		if (!student) {
+			throw new Error("Student not found");
+		}
+
+		const trainer = await adminRepo.getTrainerById(trainerId);
+		if (!trainer) {
+			throw new Error("Trainer not found");
+		}
+
+		await adminRepo.assignTrainerToStudent(studentId, trainerId);
+
+		return {
+			message: "Trainer assigned to student successfully",
+			studentId,
+			trainerId,
+		};
+	}
+
+	// Update student
+	async updateStudent(studentId, updateData) {
+		const student = await adminRepo.findStudentById(studentId);
+		if (!student) {
+			throw new Error("Student not found");
+		}
+
+		const updated = await adminRepo.updateStudent(studentId, updateData);
+
+		return {
+			message: "Student updated successfully",
+			student: updated,
+		};
+	}
+
+	// Delete student
+	async deleteStudent(studentId) {
+		const student = await adminRepo.findStudentById(studentId);
+		if (!student) {
+			throw new Error("Student not found");
+		}
+
+		await adminRepo.deleteStudent(studentId);
+
+		return {
+			message: "Student deleted successfully",
+			studentId,
+		};
+	}
+
+	// === Enhanced Teacher Management ===
+
+	// Get teacher details
+	async getTeacherDetails(teacherId) {
+		const teacher = await adminRepo.getTeacherById(teacherId);
+		if (!teacher) {
+			throw new Error("Teacher not found");
+		}
+
+		return {
+			message: "Teacher details retrieved successfully",
+			teacher,
+		};
+	}
+
+	// Update teacher
+	async updateTeacher(teacherId, updateData) {
+		const teacher = await adminRepo.getTeacherById(teacherId);
+		if (!teacher) {
+			throw new Error("Teacher not found");
+		}
+
+		const updated = await adminRepo.updateTeacher(teacherId, updateData);
+
+		return {
+			message: "Teacher updated successfully",
+			teacher: updated,
+		};
+	}
+
+	// Delete teacher
+	async deleteTeacher(teacherId) {
+		const teacher = await adminRepo.getTeacherById(teacherId);
+		if (!teacher) {
+			throw new Error("Teacher not found");
+		}
+
+		await adminRepo.deleteTeacher(teacherId);
+
+		return {
+			message: "Teacher deleted successfully",
+			teacherId,
+		};
+	}
+
+	// === Enhanced Trainer Management ===
+
+	// Get trainer details
+	async getTrainerDetails(trainerId) {
+		const trainer = await adminRepo.getTrainerById(trainerId);
+		if (!trainer) {
+			throw new Error("Trainer not found");
+		}
+
+		return {
+			message: "Trainer details retrieved successfully",
+			trainer,
+		};
+	}
+
+	// Update trainer
+	async updateTrainer(trainerId, updateData) {
+		const trainer = await adminRepo.getTrainerById(trainerId);
+		if (!trainer) {
+			throw new Error("Trainer not found");
+		}
+
+		const updated = await adminRepo.updateTrainer(trainerId, updateData);
+
+		return {
+			message: "Trainer updated successfully",
+			trainer: updated,
+		};
+	}
+
+	// Delete trainer
+	async deleteTrainer(trainerId) {
+		const trainer = await adminRepo.getTrainerById(trainerId);
+		if (!trainer) {
+			throw new Error("Trainer not found");
+		}
+
+		await adminRepo.deleteTrainer(trainerId);
+
+		return {
+			message: "Trainer deleted successfully",
+			trainerId,
+		};
+	}
+
+	// === Enhanced Vehicle Management ===
+
+	// Update vehicle
+	async updateVehicle(vehicleId, updateData) {
+		const vehicle = await adminRepo.getVehicleById(vehicleId);
+		if (!vehicle) {
+			throw new Error("Vehicle not found");
+		}
+
+		const updated = await adminRepo.updateVehicle(vehicleId, updateData);
+
+		return {
+			message: "Vehicle updated successfully",
+			vehicle: updated,
+		};
+	}
+
+	// Delete vehicle
+	async deleteVehicle(vehicleId) {
+		const vehicle = await adminRepo.getVehicleById(vehicleId);
+		if (!vehicle) {
+			throw new Error("Vehicle not found");
+		}
+
+		await adminRepo.deleteVehicle(vehicleId);
+
+		return {
+			message: "Vehicle deleted successfully",
+			vehicleId,
+		};
+	}
+
+	// Add maintenance record
+	async addMaintenanceRecord(vehicleId, maintenanceData) {
+		const vehicle = await adminRepo.getVehicleById(vehicleId);
+		if (!vehicle) {
+			throw new Error("Vehicle not found");
+		}
+
+		const updated = await adminRepo.addMaintenanceRecord(
+			vehicleId,
+			maintenanceData
+		);
+
+		return {
+			message: "Maintenance record added successfully",
+			vehicle: updated,
+		};
+	}
+
+	// === Enhanced License Management ===
+
+	// Update license
+	async updateLicense(licenseId, updateData) {
+		const license = await adminRepo.getLicenseById(licenseId);
+		if (!license) {
+			throw new Error("License not found");
+		}
+
+		const updated = await adminRepo.updateLicense(licenseId, updateData);
+
+		return {
+			message: "License updated successfully",
+			license: updated,
+		};
+	}
+
+	// Delete license
+	async deleteLicense(licenseId) {
+		const license = await adminRepo.getLicenseById(licenseId);
+		if (!license) {
+			throw new Error("License not found");
+		}
+
+		await adminRepo.deleteLicense(licenseId);
+
+		return {
+			message: "License deleted successfully",
+			licenseId,
+		};
+	}
+
+	// === Payment Management ===
+
+	// Get all payments
+	async getAllPayments(filters) {
+		const payments = await adminRepo.getAllPayments(filters);
+		return {
+			message: "Payments retrieved successfully",
+			count: payments.length,
+			payments: payments.map((p) => ({
+				paymentId: p._id,
+				student: {
+					id: p.studentId._id,
+					name: p.studentId.userId.name,
+					email: p.studentId.userId.email,
+				},
+				amount: p.amount,
+				status: p.status,
+				paymentType: p.paymentType,
+				paymentMethod: p.paymentMethod,
+				invoiceNumber: p.invoiceNumber,
+				createdAt: p.createdAt,
+			})),
+		};
+	}
+
+	// Create payment record
+	async createPayment(paymentData) {
+		const student = await adminRepo.findStudentById(paymentData.studentId);
+		if (!student) {
+			throw new Error("Student not found");
+		}
+
+		// Generate invoice number if not provided
+		if (!paymentData.invoiceNumber) {
+			const count = await adminRepo.getAllPayments({});
+			paymentData.invoiceNumber = `INV-${Date.now()}-${count.length + 1}`;
+		}
+
+		const payment = await adminRepo.createPayment(paymentData);
+
+		return {
+			message: "Payment recorded successfully",
+			payment,
+		};
+	}
+
+	// Update payment
+	async updatePayment(paymentId, updateData) {
+		const payment = await adminRepo.getPaymentById(paymentId);
+		if (!payment) {
+			throw new Error("Payment not found");
+		}
+
+		const updated = await adminRepo.updatePayment(paymentId, updateData);
+
+		return {
+			message: "Payment updated successfully",
+			payment: updated,
+		};
+	}
+
+	// Get payment details
+	async getPaymentDetails(paymentId) {
+		const payment = await adminRepo.getPaymentById(paymentId);
+		if (!payment) {
+			throw new Error("Payment not found");
+		}
+
+		return {
+			message: "Payment details retrieved successfully",
+			payment,
+		};
+	}
 }
 
 module.exports = new AdminService();

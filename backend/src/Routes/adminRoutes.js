@@ -103,4 +103,133 @@ router.put("/vehicles/:vehicleId/assign", (req, res) =>
 	adminController.assignVehicleToTrainer(req, res)
 );
 
+// === Dashboard Routes ===
+
+// GET /api/admin/dashboard/stats - Get dashboard statistics
+router.get("/dashboard/stats", (req, res) =>
+	adminController.getDashboardStats(req, res)
+);
+
+// GET /api/admin/dashboard/activities - Get recent activities
+router.get("/dashboard/activities", (req, res) =>
+	adminController.getRecentActivities(req, res)
+);
+
+// GET /api/admin/dashboard/revenue - Get revenue analytics
+router.get("/dashboard/revenue", (req, res) =>
+	adminController.getRevenueAnalytics(req, res)
+);
+
+// === Enhanced Student Routes ===
+
+// GET /api/admin/students/:studentId - Get student details
+router.get("/students/:studentId", (req, res) =>
+	adminController.getStudentDetails(req, res)
+);
+
+// PUT /api/admin/students/:studentId/assign-teacher - Assign teacher to student
+router.put("/students/:studentId/assign-teacher", (req, res) =>
+	adminController.assignTeacherToStudent(req, res)
+);
+
+// PUT /api/admin/students/:studentId/assign-trainer - Assign trainer to student
+router.put("/students/:studentId/assign-trainer", (req, res) =>
+	adminController.assignTrainerToStudent(req, res)
+);
+
+// PUT /api/admin/students/:studentId - Update student
+router.put("/students/:studentId", (req, res) =>
+	adminController.updateStudent(req, res)
+);
+
+// DELETE /api/admin/students/:studentId - Delete student
+router.delete("/students/:studentId", (req, res) =>
+	adminController.deleteStudent(req, res)
+);
+
+// === Enhanced Teacher Routes ===
+
+// GET /api/admin/teachers/:teacherId - Get teacher details
+router.get("/teachers/:teacherId", (req, res) =>
+	adminController.getTeacherDetails(req, res)
+);
+
+// PUT /api/admin/teachers/:teacherId - Update teacher
+router.put("/teachers/:teacherId", (req, res) =>
+	adminController.updateTeacher(req, res)
+);
+
+// DELETE /api/admin/teachers/:teacherId - Delete teacher
+router.delete("/teachers/:teacherId", (req, res) =>
+	adminController.deleteTeacher(req, res)
+);
+
+// === Enhanced Trainer Routes ===
+
+// GET /api/admin/trainers/:trainerId - Get trainer details
+router.get("/trainers/:trainerId", (req, res) =>
+	adminController.getTrainerDetails(req, res)
+);
+
+// PUT /api/admin/trainers/:trainerId - Update trainer
+router.put("/trainers/:trainerId", (req, res) =>
+	adminController.updateTrainer(req, res)
+);
+
+// DELETE /api/admin/trainers/:trainerId - Delete trainer
+router.delete("/trainers/:trainerId", (req, res) =>
+	adminController.deleteTrainer(req, res)
+);
+
+// === Enhanced Vehicle Routes ===
+
+// PUT /api/admin/vehicles/:vehicleId - Update vehicle
+router.put("/vehicles/:vehicleId", (req, res) =>
+	adminController.updateVehicle(req, res)
+);
+
+// DELETE /api/admin/vehicles/:vehicleId - Delete vehicle
+router.delete("/vehicles/:vehicleId", (req, res) =>
+	adminController.deleteVehicle(req, res)
+);
+
+// POST /api/admin/vehicles/:vehicleId/maintenance - Add maintenance record
+router.post("/vehicles/:vehicleId/maintenance", (req, res) =>
+	adminController.addMaintenanceRecord(req, res)
+);
+
+// === Enhanced License Routes ===
+
+// PUT /api/admin/licenses/:licenseId - Update license
+router.put("/licenses/:licenseId", (req, res) =>
+	adminController.updateLicense(req, res)
+);
+
+// DELETE /api/admin/licenses/:licenseId - Delete license
+router.delete("/licenses/:licenseId", (req, res) =>
+	adminController.deleteLicense(req, res)
+);
+
+// === Payment Routes ===
+
+// GET /api/admin/payments - Get all payments
+router.get("/payments", (req, res) =>
+	adminController.getAllPayments(req, res)
+);
+
+// POST /api/admin/payments - Create payment record
+router.post("/payments", (req, res) =>
+	adminController.createPayment(req, res)
+);
+
+// PUT /api/admin/payments/:paymentId - Update payment
+router.put("/payments/:paymentId", (req, res) =>
+	adminController.updatePayment(req, res)
+);
+
+// GET /api/admin/payments/:paymentId - Get payment details
+router.get("/payments/:paymentId", (req, res) =>
+	adminController.getPaymentDetails(req, res)
+);
+
 module.exports = router;
