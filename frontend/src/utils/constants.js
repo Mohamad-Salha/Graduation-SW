@@ -1,6 +1,6 @@
 // API Configuration
 export const API_BASE_URL =
-	process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+	process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 // User Roles
 export const ROLES = {
@@ -41,41 +41,41 @@ export const EXAM_TYPES = {
 // API Endpoints
 export const ENDPOINTS = {
 	AUTH: {
-		LOGIN: "/auth/login",
-		REGISTER: "/auth/register",
-		LOGOUT: "/auth/logout",
+		LOGIN: "/api/auth/login",
+		REGISTER: "/api/auth/register",
+		LOGOUT: "/api/auth/logout",
 	},
 	STUDENT: {
-		PROFILE: "/student/profile",
-		LICENSES: "/student/licenses",
-		ENROLL: "/student/enroll",
-		TEACHERS: "/student/teachers",
-		CHOOSE_TEACHER: "/student/choose-teacher",
-		TRAINERS: "/student/trainers",
-		CHOOSE_TRAINER: "/student/choose-trainer",
+		PROFILE: "/api/student/profile",
+		LICENSES: "/api/student/licenses",
+		ENROLL: "/api/student/enroll",
+		TEACHERS: "/api/student/teachers",
+		CHOOSE_TEACHER: "/api/student/choose-teacher",
+		TRAINERS: "/api/student/trainers",
+		CHOOSE_TRAINER: "/api/student/choose-trainer",
 	},
 	TEACHER: {
-		PROFILE: "/teacher/profile",
-		STUDENTS: "/teacher/students",
-		MARK_READY: "/teacher/students/:id/ready",
+		PROFILE: "/api/teacher/profile",
+		STUDENTS: "/api/teacher/students",
+		MARK_READY: "/api/teacher/students/:id/ready",
 	},
 	TRAINER: {
-		PROFILE: "/trainer/profile",
-		STUDENTS: "/trainer/students",
+		PROFILE: "/api/trainer/profile",
+		STUDENTS: "/api/trainer/students",
 	},
 	ADMIN: {
-		STUDENTS: "/admin/students",
-		PENDING_STUDENTS: "/admin/students/pending",
-		APPROVE_STUDENT: "/admin/students/:id/approve",
-		REJECT_STUDENT: "/admin/students/:id/reject",
-		READY_THEO: "/admin/students/ready-theo",
-		THEO_PASS: "/admin/students/:id/theo-pass",
-		TEACHERS: "/admin/teachers",
-		TRAINERS: "/admin/trainers",
-		VEHICLES: "/admin/vehicles",
+		STUDENTS: "/api/admin/students",
+		PENDING_STUDENTS: "/api/admin/students/pending",
+		APPROVE_STUDENT: "/api/admin/students/:id/approve",
+		REJECT_STUDENT: "/api/admin/students/:id/reject",
+		READY_THEO: "/api/admin/students/ready-theo",
+		THEO_PASS: "/api/admin/students/:id/theo-pass",
+		TEACHERS: "/api/admin/teachers",
+		TRAINERS: "/api/admin/trainers",
+		VEHICLES: "/api/admin/vehicles",
 	},
 	UPLOAD: {
-		PROFILE_PICTURE: "/upload/profile-picture",
-		VEHICLE_IMAGE: "/upload/vehicle-image",
+		PROFILE_PICTURE: "/api/upload/profile-picture",
+		VEHICLE_IMAGE: "/api/upload/vehicle-image",
 	},
 };

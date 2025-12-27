@@ -24,7 +24,7 @@ class StudentRepository {
 		return await Student.findOne({ userId })
 			.populate(
 				"chosenLicense",
-				"name description price minPracticalSessions"
+				"name description category minPracticalSessions pricePerSession registrationFee totalPrice icon color isPopular estimatedDuration difficulty"
 			)
 			.populate({
 				path: "theoTeacherId",
@@ -41,7 +41,7 @@ class StudentRepository {
 		return await Student.findById(studentId)
 			.populate(
 				"chosenLicense",
-				"name description price minPracticalSessions"
+				"name description category minPracticalSessions pricePerSession registrationFee totalPrice icon color isPopular estimatedDuration difficulty"
 			)
 			.populate("theoTeacherId")
 			.populate("trainerId");

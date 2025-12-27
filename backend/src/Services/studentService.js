@@ -48,6 +48,9 @@ class StudentService {
 			theoPassed: student.theoPassed,
 			practicalProgress: student.practicalProgress,
 			practicalSessionsCompleted: student.practicalSessionsCompleted,
+			chosenLicense: student.chosenLicense || null,
+			theoTeacherId: student.theoTeacherId || null,
+			trainerId: student.trainerId || null,
 		};
 
 		// Add license info if enrolled
